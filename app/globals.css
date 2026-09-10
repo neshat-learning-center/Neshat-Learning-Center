@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   NESHAT — design tokens
+   Warm-white canvas · charcoal ink · strategic yellow (sampled from mark)
+   ========================================================================= */
+@theme {
+  /* surfaces */
+  --color-canvas: #fbfaf6; /* warm white — main background */
+  --color-paper: #ffffff; /* pure white surfaces where needed */
+  --color-sand: #f3efe6; /* subtle warm gray section background */
+  --color-sand-deep: #ece7db;
+
+  /* ink */
+  --color-ink: #262528; /* headings / primary text */
+  --color-ink-soft: #55535a; /* body */
+  --color-muted: #8b887f; /* labels / meta */
+  --color-line: #e7e2d6; /* hairlines */
+  --color-line-strong: #d8d2c3;
+
+  /* brand yellow (from the Neshat mark) */
+  --color-accent: #f4b223;
+  --color-accent-deep: #dd9c0c;
+  --color-accent-tint: #fbe9bf;
+  --color-accent-wash: #fdf6e3;
+
+  /* charcoal block (footer / dark moments) */
+  --color-slate: #2b2a2d;
+  --color-slate-soft: #3a383c;
+
+  /* fonts (bound in layout via next/font variables) */
+  --font-fa: var(--font-fa-var), "Vazirmatn", system-ui, sans-serif;
+  --font-en: var(--font-en-var), "Inter", system-ui, sans-serif;
+  --font-script: var(--font-script-var), cursive; /* small editorial captions only */
+
+  /* editorial type scale (fluid) */
+  --text-mega: clamp(3.25rem, 9vw, 8.5rem);
+  --text-mega--line-height: 0.94;
+  --text-display: clamp(2.5rem, 6vw, 5.25rem);
+  --text-display--line-height: 1.02;
+  --text-hero: clamp(2rem, 4.5vw, 3.75rem);
+  --text-hero--line-height: 1.08;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* =========================================================================
+   base
+   ========================================================================= */
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink-soft);
+  font-family: var(--font-fa);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01";
+}
+
+/* language-driven typography: EN switches the base family */
+html[lang="en"] body {
+  font-family: var(--font-en);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-slate);
+}
+
+/* Layered so component utilities (e.g. text-canvas on a dark section
+   heading) can override this default — unlayered CSS would always win over
+   Tailwind's utilities regardless of specificity. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Persian numerals & fine tuning for FA headings */
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3 {
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+}
+
+/* =========================================================================
+   editorial utilities
+   Layered so a conflicting Tailwind utility passed alongside one of these
+   (e.g. `eyebrow text-accent`, `container-editorial max-w-2xl`) can actually
+   override it — unlayered CSS beats every Tailwind layer regardless of
+   specificity or source order, which silently broke exactly that pattern.
+   ========================================================================= */
+@layer utilities {
+  /* small uppercase english / spaced persian label */
+  .eyebrow {
+    font-family: var(--font-en);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  html[dir="rtl"] .eyebrow {
+    font-family: var(--font-fa);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  /* accent variant for eyebrows on dark sections — a Tailwind text-* utility
+     can't reliably override .eyebrow's own color (both live in the utilities
+     layer at equal specificity), so this is declared after it deliberately. */
+  .eyebrow-accent {
+    color: var(--color-accent);
+  }
+
+  /* oversized index numerals used as graphic elements */
+  .numeral {
+    font-family: var(--font-en);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* thin brand rule */
+  .hair {
+    height: 1px;
+    background: var(--color-line);
+  }
+
+  /* handwritten editorial caption accent — hero only, used sparingly */
+  .font-script {
+    font-family: var(--font-script);
+  }
+
+  /* yellow highlight mark behind/under a word */
+  .mark-underline {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 100% 0.28em;
+    padding-inline: 0.05em;
+  }
+
+  .section-x {
+    padding-inline: clamp(1.25rem, 5vw, 6rem);
+  }
+
+  .container-editorial {
+    width: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+  }
+  /* narrow variants for single-column pages — a Tailwind max-w-* utility
+     can't reliably shrink .container-editorial's own max-width (same
+     equal-specificity problem as .eyebrow above), so these are declared
+     after it deliberately. */
+  .container-editorial-md {
+    max-width: 28rem;
+  }
+  .container-editorial-2xl {
+    max-width: 42rem;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* focus ring — accessible + on brand */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* =========================================================================
+   motion primitives (IntersectionObserver toggles [data-reveal])
+   ========================================================================= */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.9s var(--ease-out-soft),
+    transform 0.9s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+}
+[data-reveal-mask] {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal-mask="in"] {
+  clip-path: inset(0 0 -5% 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-mask] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+}
+
+/* draw-on stroke for the hero line */
+.draw-path {
+  stroke-dasharray: var(--len, 1200);
+  stroke-dashoffset: var(--len, 1200);
+  animation: draw 2.2s var(--ease-out-soft) 0.3s forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* =========================================================================
+   character illustration motion — small, quiet, on-brand.
+   ========================================================================= */
+.illustration-float {
+  animation: illustration-float 5s var(--ease-in-out-soft) infinite;
+}
+@keyframes illustration-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .illustration-float {
+    animation: none;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
