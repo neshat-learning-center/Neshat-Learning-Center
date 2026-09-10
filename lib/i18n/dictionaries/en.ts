@@ -156,6 +156,7 @@ export const en: Dictionary = {
     social: "Social",
     address: "Shiraz, Iran",
     addressLabel: "Address",
+    followUs: "Follow us",
     rights: "All rights reserved, Neshat Learning Center.",
     langLabel: "Language",
   },

@@ -158,6 +158,7 @@ export const fa = {
     social: "شبکه‌ها",
     address: "شیراز، ایران",
     addressLabel: "آدرس",
+    followUs: "ما را دنبال کنید",
     rights: "تمامی حقوق برای دانش‌سرای نشاط محفوظ است.",
     langLabel: "زبان",
   },
