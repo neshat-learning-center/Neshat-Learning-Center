@@ -42,7 +42,7 @@ export interface AdminData {
 }
 
 /** Small localized "N days ago" formatter — no invented libraries needed for this. */
-function relativeTime(iso: string, locale: Locale): string {
+export function relativeTime(iso: string, locale: Locale): string {
   const diffDays = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
   if (diffDays <= 0) return locale === "fa" ? "امروز" : "today";
   if (diffDays === 1) return locale === "fa" ? "دیروز" : "yesterday";

@@ -9,28 +9,9 @@ import { Logo } from "@/components/ui/Logo";
 
 type NavItem = { label: string; hash?: string; route?: string };
 
-function navFor(role: SessionCtx["role"], dict: Dictionary): NavItem[] {
+/** Admin-only nav — students/teachers use ProfileShell instead. */
+function navFor(dict: Dictionary): NavItem[] {
   const d = dict.dash;
-  const profile: NavItem = { label: d.profile, route: "/dashboard/profile" };
-  if (role === "student")
-    return [
-      { label: d.overview, hash: "#top" },
-      { label: d.myClasses, hash: "#classes" },
-      { label: d.schedule, hash: "#schedule" },
-      { label: d.attendance, hash: "#attendance" },
-      { label: d.materials, hash: "#materials" },
-      { label: d.announcements, hash: "#announcements" },
-      profile,
-    ];
-  if (role === "teacher")
-    return [
-      { label: d.overview, hash: "#top" },
-      { label: d.classes, hash: "#classes" },
-      { label: d.students, hash: "#students" },
-      { label: d.materials, hash: "#materials" },
-      { label: d.announcements, hash: "#announcements" },
-      profile,
-    ];
   return [
     { label: d.overview, route: "/dashboard" },
     { label: d.students, route: "/dashboard/admin/students" },
@@ -41,7 +22,7 @@ function navFor(role: SessionCtx["role"], dict: Dictionary): NavItem[] {
     { label: d.journal, route: "/dashboard/admin/journal" },
     { label: d.announcements, route: "/dashboard/admin/announcements" },
     { label: dict.admin.leadsTitle, route: "/dashboard/admin/leads" },
-    profile,
+    { label: d.profile, route: "/dashboard/profile" },
   ];
 }
 
@@ -56,13 +37,8 @@ export function Shell({
   session: SessionCtx;
   children: ReactNode;
 }) {
-  const nav = navFor(session.role, dict);
-  const roleLabel =
-    session.role === "student"
-      ? dict.dash.roleStudent
-      : session.role === "teacher"
-        ? dict.dash.roleTeacher
-        : dict.dash.roleAdmin;
+  const nav = navFor(dict);
+  const roleLabel = dict.dash.roleAdmin;
 
   return (
     <div className="min-h-screen bg-sand/40 lg:grid lg:grid-cols-[16rem_1fr]">

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 export function Panel({
   id,
@@ -28,12 +29,34 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-export function StatTile({ label, value }: { label: string; value: number | null }) {
-  return (
-    <div className="rounded-lg border border-line bg-canvas p-5">
-      <p className="numeral text-3xl font-bold text-ink">{value ?? "—"}</p>
+export function StatTile({
+  label,
+  value,
+  href,
+  urgent,
+}: {
+  label: string;
+  value: number | null;
+  href?: string;
+  urgent?: boolean;
+}) {
+  const content = (
+    <>
+      <p className={`numeral text-3xl font-bold ${urgent && value ? "text-accent-deep" : "text-ink"}`}>
+        {value ?? "—"}
+      </p>
       <p className="mt-1 text-sm text-muted">{label}</p>
-    </div>
+    </>
+  );
+  const className = `block rounded-lg border p-5 transition-colors ${
+    urgent && value ? "border-accent/50 bg-accent-wash hover:border-accent-deep" : "border-line bg-canvas hover:border-line-strong"
+  }`;
+  return href ? (
+    <Link href={href} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <div className={className}>{content}</div>
   );
 }
 
