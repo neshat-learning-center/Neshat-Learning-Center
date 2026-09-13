@@ -78,6 +78,30 @@ export interface Material {
   created_at: string;
 }
 
+export interface HomeworkRow {
+  id: string;
+  class_id: string;
+  teacher_id: string;
+  title: string;
+  description: string | null;
+  file_url: string | null;
+  due_date: string | null;
+  created_at: string;
+}
+
+export interface HomeworkSubmissionRow {
+  id: string;
+  homework_id: string;
+  student_id: string;
+  file_url: string | null;
+  submitted_at: string | null;
+  grade: number | null;
+  feedback: string | null;
+  graded_at: string | null;
+  graded_by: string | null;
+  created_at: string;
+}
+
 export interface Announcement {
   id: string;
   class_id: string | null;
@@ -136,6 +160,8 @@ export interface Database {
       enrollments: { Row: Enrollment };
       attendance: { Row: Attendance };
       materials: { Row: Material };
+      homeworks: { Row: HomeworkRow };
+      homework_submissions: { Row: HomeworkSubmissionRow };
       announcements: { Row: Announcement };
       books: { Row: BookRow };
       blog_posts: { Row: BlogPostRow };

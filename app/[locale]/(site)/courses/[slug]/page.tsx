@@ -11,6 +11,9 @@ import {
   getRelatedCourses,
   languageLabel,
 } from "@/lib/data/public";
+import { getCourseIdBySlug, listEnrollableClasses } from "@/lib/data/enrollment";
+import { enrollInClass, unenrollFromClass } from "@/lib/actions/enrollment";
+import { getSession } from "@/lib/auth";
 import { href } from "@/lib/utils";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
@@ -56,6 +59,12 @@ export default async function CourseDetail({
 
   const teacher = course.teacherSlug ? await getTeacherBySlug(course.teacherSlug) : undefined;
   const related = await getRelatedCourses(course.slug, course.language);
+
+  const session = await getSession();
+  const courseId = await getCourseIdBySlug(course.slug);
+  const enrollableClasses = courseId
+    ? await listEnrollableClasses(courseId, session?.role === "student" ? session.id : null)
+    : [];
   const modeLabel =
     course.mode === "online"
       ? dict.common.online
@@ -132,11 +141,68 @@ export default async function CourseDetail({
                     </div>
                   ))}
                 </dl>
-                <div className="mt-7">
-                  <Button href={href(l, "/placement")} variant="accent" arrow className="w-full justify-center">
-                    {dict.pages.enroll}
-                  </Button>
-                </div>
+
+                {session?.role === "student" ? (
+                  <div className="mt-7">
+                    <h4 className="eyebrow">{dict.pages.availableClasses}</h4>
+                    {enrollableClasses.length === 0 ? (
+                      <p className="mt-3 text-sm text-ink-soft">{dict.pages.noClassesScheduled}</p>
+                    ) : (
+                      <ul className="mt-4 flex flex-col gap-3">
+                        {enrollableClasses.map((c) => (
+                          <li key={c.id} className="rounded-md border border-line-strong bg-canvas p-4">
+                            <div className="flex items-center justify-between gap-2 text-sm">
+                              <span className="font-medium text-ink">{c.schedule ?? "—"}</span>
+                              <span className="rounded-full border border-line-strong px-2 py-0.5 text-xs text-ink-soft">
+                                {c.mode === "online" ? dict.common.online : dict.common.offline}
+                              </span>
+                            </div>
+                            {c.teacherName && <p className="mt-1 text-xs text-muted">{c.teacherName}</p>}
+                            <div className="mt-3">
+                              {c.enrolled ? (
+                                <form action={unenrollFromClass.bind(null, l, course.slug, c.id)} className="flex items-center gap-3">
+                                  <span className="text-sm font-medium text-accent-deep">
+                                    {dict.pages.enrolledAlready} ✓
+                                  </span>
+                                  <button type="submit" className="text-xs text-muted underline-offset-4 hover:text-ink hover:underline">
+                                    {dict.pages.cancelEnrollment}
+                                  </button>
+                                </form>
+                              ) : (
+                                <form action={enrollInClass.bind(null, l, course.slug, c.id)}>
+                                  <button
+                                    type="submit"
+                                    className="w-full rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-slate transition-colors hover:bg-accent-deep"
+                                  >
+                                    {dict.pages.enrollInClass}
+                                  </button>
+                                </form>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : !session ? (
+                  <div className="mt-7">
+                    <Button href={href(l, "/login")} variant="accent" arrow className="w-full justify-center">
+                      {dict.pages.loginToEnroll}
+                    </Button>
+                    <Link
+                      href={href(l, "/placement")}
+                      className="mt-3 block text-center text-sm text-ink-soft hover:text-ink hover:underline"
+                    >
+                      {dict.pages.enroll}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="mt-7">
+                    <Button href={href(l, "/placement")} variant="accent" arrow className="w-full justify-center">
+                      {dict.pages.enroll}
+                    </Button>
+                  </div>
+                )}
               </div>
             </aside>
           </Reveal>

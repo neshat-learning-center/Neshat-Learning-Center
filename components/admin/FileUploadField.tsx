@@ -24,7 +24,7 @@ export function FileUploadField({
   changeLabel = "تغییر فایل",
   storePathOnly = false,
 }: {
-  bucket: "avatars" | "books" | "materials";
+  bucket: "avatars" | "books" | "materials" | "homework";
   pathPrefix: string;
   accept?: string;
   label: string;

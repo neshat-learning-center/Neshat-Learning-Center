@@ -15,6 +15,7 @@ export function TeacherOverview({
   data: TeacherData;
 }) {
   const d = dict.dash;
+  const h = dict.homework;
   return (
     <div className="flex flex-col gap-14">
       <SectionBlock id="classes" index={1} title={d.classes}>
@@ -40,12 +41,20 @@ export function TeacherOverview({
                     <dd className="text-ink">{c.schedule}</dd>
                   </div>
                 </dl>
-                <Link
-                  href={href(locale, `/dashboard/attendance/${c.id}`)}
-                  className="mt-5 inline-block text-sm font-medium text-accent-deep hover:underline"
-                >
-                  {d.markAttendance}
-                </Link>
+                <div className="mt-5 flex items-center gap-5">
+                  <Link
+                    href={href(locale, `/dashboard/attendance/${c.id}`)}
+                    className="text-sm font-medium text-accent-deep hover:underline"
+                  >
+                    {d.markAttendance}
+                  </Link>
+                  <Link
+                    href={href(locale, `/dashboard/classes/${c.id}`)}
+                    className="text-sm font-medium text-ink-soft hover:text-ink hover:underline"
+                  >
+                    {h.manageClass}
+                  </Link>
+                </div>
               </InfoCard>
             ))}
           </div>
@@ -79,7 +88,33 @@ export function TeacherOverview({
         )}
       </SectionBlock>
 
-      <SectionBlock id="materials" index={3} title={d.materials}>
+      <SectionBlock id="homework" index={3} title={h.title}>
+        {data.homework.length === 0 ? (
+          <EmptyState label={h.noHomework} />
+        ) : (
+          <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
+            {data.homework.map((item) => (
+              <li key={item.id} className="flex items-center justify-between gap-4 px-6 py-4">
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-ink">{item.title}</p>
+                  <p className="truncate text-xs text-muted">
+                    {item.classTitle}
+                    {item.dueDate ? ` · ${h.dueDate}: ${item.dueDate}` : ""}
+                  </p>
+                </div>
+                <Link
+                  href={href(locale, `/dashboard/homework/${item.id}`)}
+                  className="shrink-0 text-sm font-medium text-accent-deep hover:underline"
+                >
+                  {h.viewSubmissions}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </SectionBlock>
+
+      <SectionBlock id="materials" index={4} title={d.materials}>
         {data.materials.length === 0 ? (
           <EmptyState label={d.empty} />
         ) : (
@@ -103,7 +138,7 @@ export function TeacherOverview({
         )}
       </SectionBlock>
 
-      <SectionBlock id="announcements" index={4} title={d.announcements}>
+      <SectionBlock id="announcements" index={5} title={d.announcements}>
         {data.announcements.length === 0 ? (
           <EmptyState label={d.empty} />
         ) : (
@@ -119,6 +154,35 @@ export function TeacherOverview({
                 </div>
               </InfoCard>
             ))}
+          </div>
+        )}
+      </SectionBlock>
+
+      <SectionBlock id="scores" index={6} title={h.scores}>
+        {data.scores.length === 0 ? (
+          <EmptyState label={h.noScoresYet} />
+        ) : (
+          <div className="overflow-hidden rounded-lg border border-line bg-canvas">
+            <table className="w-full text-start text-sm">
+              <thead>
+                <tr className="border-b border-line text-muted">
+                  <th className="px-6 py-3 text-start font-medium">{h.student}</th>
+                  <th className="px-6 py-3 text-start font-medium">{h.title}</th>
+                  <th className="px-6 py-3 text-start font-medium">{h.class}</th>
+                  <th className="px-6 py-3 text-start font-medium">{h.grade}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {data.scores.map((s) => (
+                  <tr key={s.submissionId}>
+                    <td className="px-6 py-3 font-medium text-ink">{s.studentName}</td>
+                    <td className="px-6 py-3 text-ink-soft">{s.homeworkTitle}</td>
+                    <td className="px-6 py-3 text-ink-soft">{s.classTitle}</td>
+                    <td className="numeral px-6 py-3 font-bold text-accent-deep">{s.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </SectionBlock>

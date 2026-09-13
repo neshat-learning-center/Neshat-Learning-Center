@@ -5,6 +5,14 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile, AttendanceStatus } from "@/lib/supabase/types";
 import { listMaterialsForClasses, resolveMaterialUrl } from "@/lib/data/materials";
 import {
+  listHomeworkForStudent,
+  listHomeworkForClasses,
+  listStudentScores,
+  listTeacherScores,
+  resolveHomeworkUrl,
+  type ScoreRow,
+} from "@/lib/data/homework";
+import {
   demoStudentClasses,
   demoAttendance,
   demoMaterials,
@@ -12,7 +20,31 @@ import {
   demoTeacherClasses,
   demoTeacherStudents,
   demoAdminStats,
+  demoStudentHomework,
+  demoStudentScores,
+  demoTeacherHomework,
+  demoTeacherScores,
 } from "@/content/demo";
+
+export interface StudentHomeworkItem {
+  id: string;
+  classId: string;
+  title: string;
+  description: string | null;
+  dueDate: string | null;
+  submitted: boolean;
+  fileUrl: string | null;
+  grade: number | null;
+  feedback: string | null;
+}
+
+export interface TeacherHomeworkItem {
+  id: string;
+  classId: string;
+  classTitle: string;
+  title: string;
+  dueDate: string | null;
+}
 
 export interface StudentData {
   classes: {
@@ -28,6 +60,8 @@ export interface StudentData {
   attendance: { present: number; absent: number; late: number };
   materials: { title: string; kind: string; url: string }[];
   announcements: { title: string; body: string; when: string }[];
+  homework: StudentHomeworkItem[];
+  scores: ScoreRow[];
 }
 
 export interface TeacherData {
@@ -35,6 +69,8 @@ export interface TeacherData {
   students: { name: string; klass: string; level: string }[];
   materials: { title: string; kind: string; url: string }[];
   announcements: { title: string; body: string; when: string }[];
+  homework: TeacherHomeworkItem[];
+  scores: (ScoreRow & { studentName: string })[];
 }
 
 export interface AdminData {
@@ -98,6 +134,25 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
         body: pick(a.body, locale),
         when: pick(a.when, locale),
       })),
+      homework: demoStudentHomework.map((h) => ({
+        id: h.id,
+        classId: h.classId,
+        title: pick(h.title, locale),
+        description: pick(h.description, locale),
+        dueDate: h.dueDate,
+        submitted: h.submitted,
+        fileUrl: h.submitted ? "#" : null,
+        grade: h.grade,
+        feedback: h.feedback ? pick(h.feedback, locale) : null,
+      })),
+      scores: demoStudentScores.map((s) => ({
+        submissionId: s.id,
+        homeworkTitle: pick(s.homeworkTitle, locale),
+        classTitle: pick(s.classTitle, locale),
+        grade: s.grade,
+        feedback: pick(s.feedback, locale),
+        gradedAt: s.gradedAt,
+      })),
     };
   }
 
@@ -106,6 +161,8 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
     attendance: { present: 0, absent: 0, late: 0 },
     materials: [],
     announcements: [],
+    homework: [],
+    scores: [],
   };
   if (!session.id) return empty;
 
@@ -159,7 +216,24 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
 
     const announcements = await getAnnouncementsFor("student", classIds, locale);
 
-    return { classes, attendance, materials, announcements };
+    const homeworkRows = await listHomeworkForStudent(classIds, session.id);
+    const homework = await Promise.all(
+      homeworkRows.map(async ({ homework: h, submission: s }) => ({
+        id: h.id,
+        classId: h.class_id,
+        title: h.title,
+        description: h.description,
+        dueDate: h.due_date,
+        submitted: !!s?.submitted_at,
+        fileUrl: s?.file_url ? await resolveHomeworkUrl(s.file_url) : null,
+        grade: s?.grade ?? null,
+        feedback: s?.feedback ?? null,
+      })),
+    );
+
+    const scores = await listStudentScores(session.id);
+
+    return { classes, attendance, materials, announcements, homework, scores };
   } catch {
     return empty;
   }
@@ -186,10 +260,26 @@ export async function getTeacherData(session: SessionCtx, locale: Locale): Promi
         body: pick(a.body, locale),
         when: pick(a.when, locale),
       })),
+      homework: demoTeacherHomework.map((h) => ({
+        id: h.id,
+        classId: h.classId,
+        classTitle: pick(h.classTitle, locale),
+        title: pick(h.title, locale),
+        dueDate: h.dueDate,
+      })),
+      scores: demoTeacherScores.map((s) => ({
+        submissionId: s.id,
+        homeworkTitle: pick(s.homeworkTitle, locale),
+        classTitle: pick(s.classTitle, locale),
+        grade: s.grade,
+        feedback: pick(s.feedback, locale),
+        gradedAt: s.gradedAt,
+        studentName: pick(s.studentName, locale),
+      })),
     };
   }
 
-  const empty: TeacherData = { classes: [], students: [], materials: [], announcements: [] };
+  const empty: TeacherData = { classes: [], students: [], materials: [], announcements: [], homework: [], scores: [] };
   if (!session.id) return empty;
 
   try {
@@ -243,7 +333,19 @@ export async function getTeacherData(session: SessionCtx, locale: Locale): Promi
 
     const announcements = await getAnnouncementsFor("teacher", classIds, locale);
 
-    return { classes, students, materials, announcements };
+    const classTitleById = new Map(classes.map((c) => [c.id, c.title]));
+    const homeworkRows = await listHomeworkForClasses(classIds);
+    const homework = homeworkRows.map((h) => ({
+      id: h.id,
+      classId: h.class_id,
+      classTitle: classTitleById.get(h.class_id) ?? "",
+      title: h.title,
+      dueDate: h.due_date,
+    }));
+
+    const scores = await listTeacherScores(session.id);
+
+    return { classes, students, materials, announcements, homework, scores };
   } catch {
     return empty;
   }

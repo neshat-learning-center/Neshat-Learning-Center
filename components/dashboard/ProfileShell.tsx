@@ -35,15 +35,19 @@ export function ProfileShell({
     ? [
         { label: d.classes, hash: "classes" },
         { label: d.students, hash: "students" },
+        { label: dict.homework.title, hash: "homework" },
         { label: d.materials, hash: "materials" },
         { label: d.announcements, hash: "announcements" },
+        { label: dict.homework.scores, hash: "scores" },
       ]
     : [
         { label: d.myClasses, hash: "classes" },
+        { label: dict.homework.title, hash: "homework" },
         { label: d.schedule, hash: "schedule" },
         { label: d.attendance, hash: "attendance" },
         { label: d.materials, hash: "materials" },
         { label: d.announcements, hash: "announcements" },
+        { label: dict.homework.scores, hash: "scores" },
       ];
 
   const subtitle = isTeacher && profile?.specialty ? pick(profile.specialty, locale) : undefined;

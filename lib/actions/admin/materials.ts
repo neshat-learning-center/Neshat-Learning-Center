@@ -27,7 +27,9 @@ export async function createMaterial(
     .insert({ class_id: classId, title, kind, url, uploaded_by: user?.id ?? null });
   if (error) return { error: error.message };
 
+  // used from both the admin class-edit page and the teacher's own class page
   revalidatePath(`/${locale}/dashboard/admin/classes/${classId}/edit`);
+  revalidatePath(`/${locale}/dashboard/classes/${classId}`);
   return {};
 }
 
@@ -47,4 +49,5 @@ export async function deleteMaterial(
   }
 
   revalidatePath(`/${locale}/dashboard/admin/classes/${classId}/edit`);
+  revalidatePath(`/${locale}/dashboard/classes/${classId}`);
 }

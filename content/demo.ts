@@ -94,3 +94,88 @@ export const demoAdminStats: { key: Localized; value: number }[] = [
   { key: { fa: "دوره‌ها", en: "Courses" }, value: 0 },
   { key: { fa: "کلاس‌های فعال", en: "Active classes" }, value: 0 },
 ];
+
+export const demoStudentHomework: {
+  id: string;
+  classId: string;
+  title: Localized;
+  description: Localized;
+  dueDate: string | null;
+  submitted: boolean;
+  grade: number | null;
+  feedback?: Localized;
+}[] = [
+  {
+    id: "hw1",
+    classId: "c1",
+    title: { fa: "نوشتن پاراگراف دربارهٔ آخر هفته", en: "Write a paragraph about your weekend" },
+    description: { fa: "حداقل ۸ جمله، با زمان گذشته.", en: "At least 8 sentences, using past tense." },
+    dueDate: null,
+    submitted: true,
+    grade: 92,
+    feedback: { fa: "عالی بود! فقط به حرف تعریف دقت کن.", en: "Great work! Just watch your articles." },
+  },
+  {
+    id: "hw2",
+    classId: "c2",
+    title: { fa: "تمرین شنیداری فصل ۳", en: "Chapter 3 listening exercise" },
+    description: { fa: "فایل صوتی را گوش کن و پاسخ‌نامه را کامل کن.", en: "Listen to the audio and complete the answer sheet." },
+    dueDate: null,
+    submitted: false,
+    grade: null,
+  },
+];
+
+export const demoStudentScores: {
+  id: string;
+  homeworkTitle: Localized;
+  classTitle: Localized;
+  grade: number;
+  feedback: Localized;
+  gradedAt: string;
+}[] = [
+  {
+    id: "hw1",
+    homeworkTitle: { fa: "نوشتن پاراگراف دربارهٔ آخر هفته", en: "Write a paragraph about your weekend" },
+    classTitle: { fa: "مکالمهٔ انگلیسی بزرگسالان", en: "English Conversation — Adults" },
+    grade: 92,
+    feedback: { fa: "عالی بود! فقط به حرف تعریف دقت کن.", en: "Great work! Just watch your articles." },
+    gradedAt: new Date(0).toISOString(),
+  },
+];
+
+export const demoTeacherHomework: {
+  id: string;
+  classId: string;
+  classTitle: Localized;
+  title: Localized;
+  dueDate: string | null;
+}[] = [
+  {
+    id: "hw1",
+    classId: "t1",
+    classTitle: { fa: "مکالمهٔ انگلیسی بزرگسالان", en: "English Conversation — Adults" },
+    title: { fa: "نوشتن پاراگراف دربارهٔ آخر هفته", en: "Write a paragraph about your weekend" },
+    dueDate: null,
+  },
+];
+
+export const demoTeacherScores: {
+  id: string;
+  studentName: Localized;
+  homeworkTitle: Localized;
+  classTitle: Localized;
+  grade: number;
+  feedback: Localized;
+  gradedAt: string;
+}[] = [
+  {
+    id: "hw1",
+    studentName: { fa: "زبان‌آموز ۱", en: "Student 1" },
+    homeworkTitle: { fa: "نوشتن پاراگراف دربارهٔ آخر هفته", en: "Write a paragraph about your weekend" },
+    classTitle: { fa: "مکالمهٔ انگلیسی بزرگسالان", en: "English Conversation — Adults" },
+    grade: 92,
+    feedback: { fa: "عالی بود! فقط به حرف تعریف دقت کن.", en: "Great work! Just watch your articles." },
+    gradedAt: new Date(0).toISOString(),
+  },
+];

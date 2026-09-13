@@ -30,5 +30,5 @@ export default async function DashboardPage({
     return <AdminOverview dict={dict} locale={l} data={data} />;
   }
   const data = await getStudentData(session, l);
-  return <StudentOverview dict={dict} data={data} />;
+  return <StudentOverview dict={dict} locale={l} data={data} />;
 }
