@@ -4,7 +4,9 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getBookById } from "@/lib/data/admin";
+import { deleteBook } from "@/lib/actions/admin/books";
 import { NotConnected } from "@/components/admin/NotConnected";
+import { EditPageHeader } from "@/components/admin/EditPageHeader";
 import { BookForm } from "@/components/admin/BookForm";
 
 export default async function EditBookPage({
@@ -17,6 +19,7 @@ export default async function EditBookPage({
   const l = locale as Locale;
   await requireAdminSession(l);
   const dict = getDictionary(l);
+  const a = dict.admin;
 
   if (!isSupabaseConfigured()) {
     return <NotConnected message={dict.admin.notConnected} />;
@@ -27,7 +30,12 @@ export default async function EditBookPage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-extrabold text-ink">{book.title?.fa ?? book.title?.en}</h1>
+      <EditPageHeader
+        title={book.title?.fa ?? book.title?.en}
+        deleteAction={deleteBook.bind(null, l, book.id)}
+        deleteLabel={a.delete}
+        confirmText={a.confirmDelete}
+      />
       <div className="mt-8">
         <BookForm dict={dict} locale={l} book={book} />
       </div>

@@ -47,6 +47,7 @@ export function TeacherEditForm({
         note={p.avatarNote}
         chooseLabel={a.chooseFile}
         changeLabel={a.changeFile}
+        removeLabel={a.removePicture}
         uploadingLabel={a.uploading}
       />
       <Field label={p.slug} note={p.slugNote}>

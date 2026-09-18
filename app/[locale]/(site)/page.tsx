@@ -38,7 +38,7 @@ export default async function HomePage({
       <Hero dict={dict} locale={l} />
       <CourseDiscovery dict={dict} locale={l} categories={categories} />
       <WhyNeshat dict={dict} locale={l} />
-      <Courses dict={dict} locale={l} courses={courses} teachers={teachers} />
+      <Courses dict={dict} locale={l} courses={courses} categories={categories} />
       <Teachers dict={dict} locale={l} teachers={teachers} />
       <LearningModes dict={dict} locale={l} />
       <Books dict={dict} locale={l} books={books} />

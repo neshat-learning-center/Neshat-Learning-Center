@@ -38,7 +38,7 @@ export function BookForm({
         <Select name="language" defaultValue={book?.language ?? ""}>
           <option value="">—</option>
           {categories.map((cat) => (
-            <option key={cat.language} value={cat.language}>
+            <option key={cat.slug} value={cat.filter.value}>
               {cat.title[locale]}
             </option>
           ))}
@@ -81,6 +81,7 @@ export function BookForm({
           label={a.coverUrl}
           chooseLabel={a.chooseFile}
           changeLabel={a.changeFile}
+          removeLabel={a.removePicture}
           uploadingLabel={a.uploading}
         />
         <FileUploadField

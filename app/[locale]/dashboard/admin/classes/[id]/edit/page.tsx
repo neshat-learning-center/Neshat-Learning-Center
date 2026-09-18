@@ -5,7 +5,9 @@ import { requireAdminSession } from "@/lib/admin-guard";
 import { isSupabaseConfigured, isServiceRoleConfigured } from "@/lib/supabase/config";
 import { getClassById, listCourseOptions, listTeacherOptions, listClassEnrollments } from "@/lib/data/admin";
 import { listMaterialsForClass, resolveMaterialUrl } from "@/lib/data/materials";
+import { deleteClass } from "@/lib/actions/admin/classes";
 import { NotConnected } from "@/components/admin/NotConnected";
+import { EditPageHeader } from "@/components/admin/EditPageHeader";
 import { ClassForm } from "@/components/admin/ClassForm";
 import { EnrollmentManager } from "@/components/admin/EnrollmentManager";
 import { MaterialsManager, type MaterialWithUrl } from "@/components/admin/MaterialsManager";
@@ -20,6 +22,7 @@ export default async function EditClassPage({
   const l = locale as Locale;
   await requireAdminSession(l);
   const dict = getDictionary(l);
+  const a = dict.admin;
 
   if (!isSupabaseConfigured()) {
     return <NotConnected message={dict.admin.notConnected} />;
@@ -46,7 +49,12 @@ export default async function EditClassPage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-extrabold text-ink">{klass.title}</h1>
+      <EditPageHeader
+        title={klass.title}
+        deleteAction={deleteClass.bind(null, l, klass.id, undefined)}
+        deleteLabel={a.delete}
+        confirmText={a.confirmDelete}
+      />
       <div className="mt-8">
         <ClassForm dict={dict} locale={l} klass={klass} courses={courses} teachers={teachers} />
       </div>

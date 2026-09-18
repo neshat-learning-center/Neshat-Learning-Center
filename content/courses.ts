@@ -3,18 +3,21 @@ import type { Course } from "./types";
 /**
  * SEED / SAMPLE courses for layout. Editable via the admin dashboard.
  * No prices or fabricated details are shown on the public site by default.
+ *
+ * A course is the catalog/marketing entry only — language, category, level,
+ * age group, cover image, recommended books. Teacher, schedule, and
+ * in-person/online are all class-level concerns (see content/demo classes on
+ * the course detail page), since one course can run as several classes.
  */
 export const courses: Course[] = [
   {
     slug: "english-conversation-adults",
     title: { fa: "مکالمهٔ انگلیسی بزرگسالان", en: "English Conversation — Adults" },
     language: "english",
+    category: "conversation",
     level: { fa: "متوسط", en: "Intermediate" },
     age: "adults",
-    mode: "both",
-    teacherSlug: "teacher-1",
-    capacity: 12,
-    schedule: { fa: "شنبه و دوشنبه", en: "Sat & Mon" },
+    bookSlugs: ["neshat-conversation-notebook", "everyday-vocabulary"],
     summary: {
       fa: "تمرکز بر گفت‌وگوی روان و طبیعی در موقعیت‌های واقعی.",
       en: "Focused on fluent, natural conversation in real situations.",
@@ -23,13 +26,11 @@ export const courses: Course[] = [
   {
     slug: "ielts-intensive",
     title: { fa: "آیلتس فشرده", en: "IELTS Intensive" },
-    language: "ielts",
+    language: "english",
+    category: "ielts",
     level: { fa: "پیشرفته", en: "Advanced" },
     age: "adults",
-    mode: "both",
-    teacherSlug: "teacher-2",
-    capacity: 8,
-    schedule: { fa: "یکشنبه و سه‌شنبه", en: "Sun & Tue" },
+    bookSlugs: ["ielts-writing-guide"],
     summary: {
       fa: "آمادگی هدفمند برای چهار مهارت آزمون آیلتس.",
       en: "Targeted preparation across all four IELTS skills.",
@@ -39,12 +40,10 @@ export const courses: Course[] = [
     slug: "german-a1",
     title: { fa: "آلمانی پایه A1", en: "German A1" },
     language: "german",
+    category: "general",
     level: { fa: "پایه", en: "Beginner" },
     age: "adults",
-    mode: "offline",
-    teacherSlug: "teacher-3",
-    capacity: 14,
-    schedule: { fa: "پنجشنبه", en: "Thursdays" },
+    bookSlugs: ["german-first-steps"],
     summary: {
       fa: "شروع اصولی آلمانی، از الفبا تا جمله‌سازی روزمره.",
       en: "A solid start in German, from the alphabet to everyday sentences.",
@@ -54,12 +53,9 @@ export const courses: Course[] = [
     slug: "turkish-conversation",
     title: { fa: "مکالمهٔ ترکی استانبولی", en: "Turkish Conversation" },
     language: "turkish",
+    category: "conversation",
     level: { fa: "پایه تا متوسط", en: "Beginner–Intermediate" },
     age: "adults",
-    mode: "online",
-    teacherSlug: "teacher-1",
-    capacity: 12,
-    schedule: { fa: "دوشنبه", en: "Mondays" },
     summary: {
       fa: "مکالمهٔ کاربردی برای سفر، کار و زندگی.",
       en: "Practical conversation for travel, work, and life.",
@@ -68,13 +64,11 @@ export const courses: Course[] = [
   {
     slug: "kids-english",
     title: { fa: "انگلیسی کودکان", en: "English for Kids" },
-    language: "kids",
+    language: "english",
+    category: "kids",
     level: { fa: "خردسال", en: "Young learners" },
     age: "kids",
-    mode: "offline",
-    teacherSlug: "teacher-4",
-    capacity: 10,
-    schedule: { fa: "چهارشنبه", en: "Wednesdays" },
+    bookSlugs: ["stories-for-kids"],
     summary: {
       fa: "یادگیری زبان از راه بازی، داستان و فعالیت گروهی.",
       en: "Learning through play, stories, and group activity.",
@@ -83,13 +77,10 @@ export const courses: Course[] = [
   {
     slug: "teens-english",
     title: { fa: "انگلیسی نوجوانان", en: "English for Teens" },
-    language: "kids",
+    language: "english",
+    category: "kids",
     level: { fa: "متوسط", en: "Intermediate" },
     age: "teens",
-    mode: "both",
-    teacherSlug: "teacher-4",
-    capacity: 12,
-    schedule: { fa: "سه‌شنبه", en: "Tuesdays" },
     summary: {
       fa: "پلی میان درس مدرسه و زبانِ واقعی و روزمره.",
       en: "A bridge between school lessons and real, everyday language.",

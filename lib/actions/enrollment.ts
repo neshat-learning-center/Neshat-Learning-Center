@@ -14,6 +14,15 @@ export async function enrollInClass(locale: Locale, courseSlug: string, classId:
   } = await supabase.auth.getUser();
   if (!user) return;
 
+  const { data: cls } = await supabase.from("classes").select("capacity").eq("id", classId).maybeSingle();
+  if (cls?.capacity != null) {
+    const { count } = await supabase
+      .from("enrollments")
+      .select("id", { count: "exact", head: true })
+      .eq("class_id", classId);
+    if ((count ?? 0) >= cls.capacity) return;
+  }
+
   await supabase.from("enrollments").insert({ student_id: user.id, class_id: classId });
   revalidatePath(`/${locale}/courses/${courseSlug}`);
   revalidatePath(`/${locale}/dashboard`);

@@ -69,6 +69,7 @@ export function ProfileForm({
         note={p.avatarNote}
         chooseLabel={dict.admin.chooseFile}
         changeLabel={dict.admin.changeFile}
+        removeLabel={dict.admin.removePicture}
         uploadingLabel={dict.admin.uploading}
       />
 

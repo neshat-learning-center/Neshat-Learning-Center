@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { getCourses, getTeachers } from "@/lib/data/public";
+import { getCourses, getCategories } from "@/lib/data/public";
 import { PageHero } from "@/components/layout/PageHero";
 import { CourseGrid } from "@/components/sections/CourseGrid";
 
@@ -22,14 +22,15 @@ export default async function CoursesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ filter?: string }>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const l = locale as Locale;
   const dict = getDictionary(l);
-  const { lang } = await searchParams;
-  const [courses, teachers] = await Promise.all([getCourses(), getTeachers()]);
+  const { filter } = await searchParams;
+  const courses = await getCourses();
+  const categories = getCategories();
 
   return (
     <>
@@ -47,8 +48,8 @@ export default async function CoursesPage({
             dict={dict}
             locale={l}
             courses={courses}
-            teachers={teachers}
-            initialFilter={lang ?? "all"}
+            categories={categories}
+            initialFilter={filter ?? "all"}
           />
         </div>
       </section>

@@ -1,13 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import type { Locale } from "@/lib/i18n/config";
-import type { Category, Course, Teacher, Book, Post, LanguageKey } from "@/content/types";
+import type { Category, Course, Teacher, Book, Post, CourseCategory, CourseLanguage, LanguageKey } from "@/content/types";
 import { categories as seedCategories } from "@/content/categories";
 import { courses as seedCourses } from "@/content/courses";
 import { teachers as seedTeachers } from "@/content/teachers";
 import { books as seedBooks } from "@/content/books";
 import { posts as seedPosts } from "@/content/journal";
 import type { CourseRow, Profile, BookRow, BlogPostRow } from "@/lib/supabase/types";
+
+export { languageLabel, categoryLabel } from "@/lib/labels";
 
 /**
  * Public content layer: reads from Supabase when it's configured and has
@@ -22,11 +23,6 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 // ---- categories — editorial, not database-backed (see content/categories.ts) ----
 export function getCategories(): Category[] {
   return seedCategories;
-}
-
-export function languageLabel(language: LanguageKey, locale: Locale): string {
-  const cat = seedCategories.find((c) => c.language === language);
-  return cat ? cat.title[locale] : language;
 }
 
 // ---- row → app-type mapping ----
@@ -44,17 +40,25 @@ function spineFromSlug(slug: string): [string, string] {
   return BOOK_SPINES[hash % BOOK_SPINES.length];
 }
 
-function mapCourse(row: CourseRow & { teacher?: { slug: string | null } | null }): Course {
+type CourseBooksRel = { course_books?: { books: { slug: string | null } | { slug: string | null }[] | null }[] | null };
+
+function bookSlugsFromRow(row: CourseBooksRel): string[] {
+  return (row.course_books ?? [])
+    .map((cb) => (Array.isArray(cb.books) ? cb.books[0] : cb.books))
+    .map((b) => b?.slug)
+    .filter((s): s is string => !!s);
+}
+
+function mapCourse(row: CourseRow & CourseBooksRel): Course {
   return {
     slug: row.slug,
     title: row.title,
-    language: row.language as LanguageKey,
+    language: row.language as CourseLanguage,
+    category: row.category as CourseCategory,
     level: row.level ?? { fa: "", en: "" },
     age: (row.age_group as Course["age"]) ?? "adults",
-    mode: row.mode,
-    teacherSlug: row.teacher?.slug ?? undefined,
-    capacity: row.capacity ?? undefined,
-    schedule: row.schedule ?? undefined,
+    image: row.cover_url ?? undefined,
+    bookSlugs: bookSlugsFromRow(row),
     summary: row.summary ?? { fa: "", en: "" },
   };
 }
@@ -114,7 +118,7 @@ export async function getCourses(): Promise<Course[]> {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("courses")
-      .select("*, teacher:profiles(slug)")
+      .select("*, course_books(books(slug))")
       .order("created_at", { ascending: true });
     if (error || !data || data.length === 0) return seedCourses;
     return data.map(mapCourse);
@@ -129,7 +133,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("courses")
-      .select("*, teacher:profiles(slug)")
+      .select("*, course_books(books(slug))")
       .eq("slug", slug)
       .maybeSingle();
     if (error || !data) return seedCourses.find((c) => c.slug === slug);
@@ -141,7 +145,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
 
 export async function getRelatedCourses(
   slug: string,
-  language: LanguageKey,
+  language: CourseLanguage,
   limit = 2,
 ): Promise<Course[]> {
   const all = await getCourses();
@@ -198,20 +202,44 @@ export async function getTeacherBySlug(slug: string): Promise<Teacher | undefine
   }
 }
 
-export async function getCoursesByTeacher(slug: string): Promise<Course[]> {
-  if (!isSupabaseConfigured()) return seedCourses.filter((c) => c.teacherSlug === slug);
+export interface TaughtClass {
+  classId: string;
+  courseSlug: string;
+  title: Course["title"];
+  level: Course["level"];
+}
+
+/** The classes a teacher currently teaches, with enough of the parent
+ * course's info to link to and label it — teachers are a class-level
+ * concern, not a course-level one, so this walks classes -> courses. */
+export async function getClassesByTeacher(slug: string): Promise<TaughtClass[]> {
+  if (!isSupabaseConfigured()) return [];
   try {
     const row = await findTeacherRow(slug);
     if (!row) return [];
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("courses")
-      .select("*, teacher:profiles(slug)")
+      .from("classes")
+      .select("id, course:courses(slug, title, level)")
       .eq("teacher_id", row.id);
     if (error || !data) return [];
-    return data.map(mapCourse);
+    return data
+      .map((c) => {
+        const rel = c.course as unknown;
+        const course = (Array.isArray(rel) ? rel[0] : rel) as
+          | { slug: string; title: Course["title"]; level: Course["level"] | null }
+          | undefined;
+        if (!course) return null;
+        return {
+          classId: c.id,
+          courseSlug: course.slug,
+          title: course.title,
+          level: course.level ?? { fa: "", en: "" },
+        };
+      })
+      .filter((c): c is TaughtClass => !!c);
   } catch {
-    return seedCourses.filter((c) => c.teacherSlug === slug);
+    return [];
   }
 }
 

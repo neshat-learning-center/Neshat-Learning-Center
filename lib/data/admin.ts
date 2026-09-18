@@ -78,11 +78,29 @@ export async function listStudentEnrollments(
   );
 }
 
-export async function listCoursesAdmin(): Promise<(CourseRow & { teacherName: string | null })[]> {
+export async function listCoursesAdmin(): Promise<(CourseRow & { classCount: number })[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("courses")
+    .select("*, classes(count)")
+    .order("created_at", { ascending: false });
+  return (
+    data?.map((row) => {
+      const rel = row.classes as unknown;
+      const count = (Array.isArray(rel) ? rel[0] : rel) as { count?: number } | undefined;
+      return { ...row, classCount: count?.count ?? 0 };
+    }) ?? []
+  );
+}
+
+export async function listClassesByCourse(
+  courseId: string,
+): Promise<(ClassRow & { teacherName: string | null })[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("classes")
     .select("*, teacher:profiles(full_name)")
+    .eq("course_id", courseId)
     .order("created_at", { ascending: false });
   return (
     data?.map((row) => {
@@ -91,6 +109,19 @@ export async function listCoursesAdmin(): Promise<(CourseRow & { teacherName: st
       return { ...row, teacherName: t?.full_name ?? null };
     }) ?? []
   );
+}
+
+export async function getCourseBookIds(courseId: string): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("course_books").select("book_id").eq("course_id", courseId);
+  return data?.map((r) => r.book_id) ?? [];
+}
+
+/** For checkbox lists: id + display title. */
+export async function listBookOptions(): Promise<{ id: string; title: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("books").select("id, title").order("created_at", { ascending: false });
+  return data?.map((b) => ({ id: b.id, title: b.title?.fa ?? b.title?.en ?? b.id })) ?? [];
 }
 
 export async function getCourseById(id: string): Promise<CourseRow | null> {

@@ -67,4 +67,5 @@ export async function deletePost(locale: Locale, id: string): Promise<void> {
   await supabase.from("blog_posts").delete().eq("id", id);
   revalidatePath(`/${locale}/dashboard/admin/journal`);
   revalidatePath(`/${locale}/journal`);
+  redirect(`/${locale}/dashboard/admin/journal`);
 }

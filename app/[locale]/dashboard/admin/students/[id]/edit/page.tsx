@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { isSupabaseConfigured, isServiceRoleConfigured } from "@/lib/supabase/config";
 import { getProfileById, listStudentEnrollments } from "@/lib/data/admin";
+import { deleteStudent } from "@/lib/actions/admin/students";
 import { NotConnected } from "@/components/admin/NotConnected";
+import { EditPageHeader } from "@/components/admin/EditPageHeader";
 import { StudentEditForm } from "@/components/admin/StudentEditForm";
 
 export default async function EditStudentPage({
@@ -31,7 +33,16 @@ export default async function EditStudentPage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-extrabold text-ink">{student.full_name ?? a.manageStudents}</h1>
+      {isServiceRoleConfigured() ? (
+        <EditPageHeader
+          title={student.full_name ?? a.manageStudents}
+          deleteAction={deleteStudent.bind(null, l, student.id)}
+          deleteLabel={a.delete}
+          confirmText={a.confirmDelete}
+        />
+      ) : (
+        <h1 className="text-2xl font-extrabold text-ink">{student.full_name ?? a.manageStudents}</h1>
+      )}
 
       <div className="mt-8">
         <StudentEditForm dict={dict} locale={l} student={student} />

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { isLocale, pick, locales, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { teachers as seedTeachers } from "@/content/teachers";
-import { getTeacherBySlug, getCoursesByTeacher } from "@/lib/data/public";
+import { getTeacherBySlug, getClassesByTeacher } from "@/lib/data/public";
 import { href } from "@/lib/utils";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
@@ -42,7 +42,7 @@ export default async function TeacherProfile({
   const teacher = await getTeacherBySlug(slug);
   if (!teacher) notFound();
 
-  const classes = await getCoursesByTeacher(teacher.slug);
+  const classes = await getClassesByTeacher(teacher.slug);
 
   return (
     <>
@@ -90,9 +90,9 @@ export default async function TeacherProfile({
                 <h3 className="eyebrow">{dict.pages.teacherClasses}</h3>
                 <ul className="mt-5 flex flex-col">
                   {classes.map((c) => (
-                    <li key={c.slug}>
+                    <li key={c.classId}>
                       <Link
-                        href={href(l, `/courses/${c.slug}`)}
+                        href={href(l, `/courses/${c.courseSlug}`)}
                         className="group flex items-center justify-between border-t border-line py-5 last:border-b"
                       >
                         <span className="text-lg font-bold text-ink transition-colors group-hover:text-accent-deep">

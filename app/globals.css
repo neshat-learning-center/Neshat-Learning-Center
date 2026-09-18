@@ -191,6 +191,24 @@ html[lang="en"] body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* dropdown listbox — a thin, always-visible, on-brand scrollbar instead of
+     the OS default, so a long option list (languages, categories…) reads as
+     scrollable rather than just cut off. */
+  .dropdown-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+  .dropdown-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .dropdown-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .dropdown-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-strong);
+    border-radius: 9999px;
+  }
 }
 
 /* focus ring — accessible + on brand */

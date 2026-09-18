@@ -82,4 +82,5 @@ export async function deleteTeacher(locale: Locale, id: string): Promise<void> {
   const admin = createAdminClient();
   await admin.auth.admin.deleteUser(id);
   revalidatePath(`/${locale}/dashboard/admin/teachers`);
+  redirect(`/${locale}/dashboard/admin/teachers`);
 }

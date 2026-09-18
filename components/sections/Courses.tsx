@@ -1,6 +1,6 @@
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-import type { Course, Teacher } from "@/content/types";
+import type { Category, Course } from "@/content/types";
 import { href } from "@/lib/utils";
 import { SectionIntro } from "@/components/ui/SectionIntro";
 import { Button } from "@/components/ui/Button";
@@ -10,12 +10,12 @@ export function Courses({
   dict,
   locale,
   courses,
-  teachers,
+  categories,
 }: {
   dict: Dictionary;
   locale: Locale;
   courses: Course[];
-  teachers: Teacher[];
+  categories: Category[];
 }) {
   return (
     <section id="courses" className="section-x py-20 md:py-28">
@@ -31,7 +31,7 @@ export function Courses({
           }
           className="mb-12"
         />
-        <CourseGrid dict={dict} locale={locale} courses={courses} teachers={teachers} />
+        <CourseGrid dict={dict} locale={locale} courses={courses} categories={categories} />
       </div>
     </section>
   );

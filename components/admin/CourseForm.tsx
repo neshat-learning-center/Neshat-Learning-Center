@@ -4,8 +4,10 @@ import { useActionState } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { CourseRow } from "@/lib/supabase/types";
-import { categories } from "@/content/categories";
+import { LANGUAGES } from "@/content/languages";
+import { COURSE_CATEGORIES } from "@/content/course-categories";
 import { Field, TextInput, TextArea, Select, SubmitButton } from "@/components/admin/fields";
+import { FileUploadField } from "@/components/admin/FileUploadField";
 import { createCourse, updateCourse, type AdminFormState } from "@/lib/actions/admin/courses";
 
 const AGE_GROUPS = [
@@ -18,17 +20,19 @@ export function CourseForm({
   dict,
   locale,
   course,
-  teachers,
+  books,
+  selectedBookIds = [],
 }: {
   dict: Dictionary;
   locale: Locale;
   course?: CourseRow;
-  teachers: { id: string; name: string }[];
+  books: { id: string; title: string }[];
+  selectedBookIds?: string[];
 }) {
   const action = course ? updateCourse.bind(null, locale, course.id) : createCourse.bind(null, locale);
   const [state, formAction, pending] = useActionState<AdminFormState, FormData>(action, {});
   const a = dict.admin;
-  const c = dict.courses;
+  const pathPrefix = course?.id ?? "new";
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
@@ -42,24 +46,23 @@ export function CourseForm({
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={c.language}>
+        <Field label={a.language}>
           <Select name="language" required defaultValue={course?.language ?? ""}>
             <option value="" disabled>
               {a.language}
             </option>
-            {categories.map((cat) => (
-              <option key={cat.language} value={cat.language}>
-                {cat.title[locale]}
+            {LANGUAGES.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang[locale]}
               </option>
             ))}
           </Select>
         </Field>
-        <Field label={a.ageGroup}>
-          <Select name="age_group" defaultValue={course?.age_group ?? ""}>
-            <option value="">—</option>
-            {AGE_GROUPS.map((g) => (
-              <option key={g.value} value={g.value}>
-                {g[locale]}
+        <Field label={a.category}>
+          <Select name="category" required defaultValue={course?.category ?? "general"}>
+            {COURSE_CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c[locale]}
               </option>
             ))}
           </Select>
@@ -75,47 +78,52 @@ export function CourseForm({
         </Field>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.mode}>
-          <Select name="mode" defaultValue={course?.mode ?? "both"}>
-            <option value="offline">{dict.common.offline}</option>
-            <option value="online">{dict.common.online}</option>
-            <option value="both">{dict.common.both}</option>
-          </Select>
-        </Field>
-        <Field label={a.teacher}>
-          <Select name="teacher_id" defaultValue={course?.teacher_id ?? ""}>
-            <option value="">{a.noTeacher}</option>
-            {teachers.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
+      <Field label={a.ageGroup}>
+        <Select name="age_group" defaultValue={course?.age_group ?? ""}>
+          <option value="">—</option>
+          {AGE_GROUPS.map((g) => (
+            <option key={g.value} value={g.value}>
+              {g[locale]}
+            </option>
+          ))}
+        </Select>
+      </Field>
+
+      <FileUploadField
+        bucket="books"
+        pathPrefix={`courses/${pathPrefix}/cover`}
+        accept="image/*"
+        hiddenInputName="cover_url"
+        currentUrl={course?.cover_url}
+        previewAsImage
+        label={a.coverImage}
+        chooseLabel={a.chooseFile}
+        changeLabel={a.changeFile}
+        removeLabel={a.removePicture}
+        uploadingLabel={a.uploading}
+      />
+
+      {books.length > 0 && (
+        <Field label={a.books}>
+          <div className="flex flex-col gap-2 rounded-md border border-line-strong p-4">
+            {books.map((b) => (
+              <label key={b.id} className="flex items-center gap-2 text-sm text-ink">
+                <input type="checkbox" name="book_ids" value={b.id} defaultChecked={selectedBookIds.includes(b.id)} />
+                {b.title}
+              </label>
             ))}
-          </Select>
+          </div>
         </Field>
-      </div>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.scheduleFa}>
-          <TextInput name="schedule_fa" defaultValue={course?.schedule?.fa ?? ""} />
-        </Field>
-        <Field label={a.scheduleEn}>
-          <TextInput name="schedule_en" dir="ltr" className="text-start" defaultValue={course?.schedule?.en ?? ""} />
-        </Field>
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.capacity}>
-          <TextInput name="capacity" type="number" min={0} dir="ltr" className="text-start" defaultValue={course?.capacity ?? ""} />
+        <Field label={a.price}>
+          <TextInput name="price" type="number" min={0} dir="ltr" className="text-start" defaultValue={course?.price ?? ""} />
         </Field>
         <Field label={a.duration}>
           <TextInput name="duration" dir="ltr" className="text-start" defaultValue={course?.duration ?? ""} />
         </Field>
       </div>
-
-      <Field label={a.price}>
-        <TextInput name="price" type="number" min={0} dir="ltr" className="text-start" defaultValue={course?.price ?? ""} />
-      </Field>
 
       <Field label={a.summaryFa}>
         <TextArea name="summary_fa" rows={3} defaultValue={course?.summary?.fa ?? ""} />

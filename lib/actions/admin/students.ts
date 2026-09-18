@@ -37,4 +37,5 @@ export async function deleteStudent(locale: Locale, id: string): Promise<void> {
   const admin = createAdminClient();
   await admin.auth.admin.deleteUser(id); // cascades to delete the profiles row
   revalidatePath(`/${locale}/dashboard/admin/students`);
+  redirect(`/${locale}/dashboard/admin/students`);
 }

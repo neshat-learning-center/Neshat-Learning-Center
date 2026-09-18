@@ -5,8 +5,8 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { listCoursesAdmin } from "@/lib/data/admin";
-import { languageLabel } from "@/lib/data/public";
-import type { LanguageKey } from "@/content/types";
+import { languageLabel, categoryLabel } from "@/lib/data/public";
+import type { CourseLanguage, CourseCategory } from "@/content/types";
 import { href } from "@/lib/utils";
 import { deleteCourse } from "@/lib/actions/admin/courses";
 import { NotConnected } from "@/components/admin/NotConnected";
@@ -58,7 +58,8 @@ export default async function AdminCoursesPage({
               <tr className="border-b border-line text-muted">
                 <th className="px-5 py-3 text-start font-medium">{a.titleFa}</th>
                 <th className="px-5 py-3 text-start font-medium">{dict.courses.language}</th>
-                <th className="px-5 py-3 text-start font-medium">{a.teacher}</th>
+                <th className="px-5 py-3 text-start font-medium">{dict.courses.category}</th>
+                <th className="px-5 py-3 text-start font-medium">{a.classesForCourse}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.edit}</th>
               </tr>
             </thead>
@@ -66,8 +67,9 @@ export default async function AdminCoursesPage({
               {courses.map((c) => (
                 <tr key={c.id}>
                   <td className="px-5 py-3 font-medium text-ink">{c.title?.fa ?? c.title?.en}</td>
-                  <td className="px-5 py-3 text-ink-soft">{languageLabel(c.language as LanguageKey, l)}</td>
-                  <td className="px-5 py-3 text-ink-soft">{c.teacherName ?? a.noTeacher}</td>
+                  <td className="px-5 py-3 text-ink-soft">{languageLabel(c.language as CourseLanguage, l)}</td>
+                  <td className="px-5 py-3 text-ink-soft">{categoryLabel(c.category as CourseCategory, l)}</td>
+                  <td className="px-5 py-3 text-ink-soft">{c.classCount}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-4">
                       <Link

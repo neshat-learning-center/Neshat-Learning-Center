@@ -5,7 +5,6 @@ import type { Localized } from "@/lib/i18n/config";
  * Regenerate with `supabase gen types typescript` once the CLI is connected.
  */
 export type Role = "admin" | "teacher" | "student";
-export type ClassMode = "offline" | "online" | "both";
 export type ClassStatus = "upcoming" | "active" | "finished" | "cancelled";
 export type AttendanceStatus = "present" | "absent" | "late" | "excused";
 export type MaterialKind = "pdf" | "document" | "audio" | "video" | "link";
@@ -27,14 +26,14 @@ export interface CourseRow {
   id: string;
   slug: string;
   title: Localized;
+  /** the real language taught: english/german/turkish */
   language: string;
+  /** course "type" — general/conversation/ielts/kids/teacher-training */
+  category: string;
   level: Localized | null;
   age_group: string | null;
-  mode: ClassMode;
+  cover_url: string | null;
   summary: Localized | null;
-  schedule: Localized | null;
-  capacity: number | null;
-  teacher_id: string | null;
   price: number | null;
   duration: string | null;
   created_at: string;
@@ -49,6 +48,7 @@ export interface ClassRow {
   schedule: string | null;
   status: ClassStatus;
   online_meeting_url: string | null;
+  capacity: number | null;
   created_at: string;
 }
 

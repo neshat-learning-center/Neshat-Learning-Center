@@ -13,6 +13,7 @@ export type AdminFormState = { error?: string };
 function readClassFields(formData: FormData) {
   const course_id = String(formData.get("course_id") ?? "").trim();
   const teacher_id = String(formData.get("teacher_id") ?? "").trim();
+  const capacity = String(formData.get("capacity") ?? "").trim();
   return {
     title: String(formData.get("title") ?? "").trim(),
     course_id: course_id || null,
@@ -21,6 +22,7 @@ function readClassFields(formData: FormData) {
     schedule: String(formData.get("schedule") ?? "").trim() || null,
     status: String(formData.get("status") ?? "upcoming") as ClassStatus,
     online_meeting_url: String(formData.get("online_meeting_url") ?? "").trim() || null,
+    capacity: capacity ? Number(capacity) : null,
   };
 }
 
@@ -30,10 +32,13 @@ export async function createClass(
   formData: FormData,
 ): Promise<AdminFormState> {
   const supabase = await createClient();
-  const { error } = await supabase.from("classes").insert(readClassFields(formData));
+  const fields = readClassFields(formData);
+  const { error } = await supabase.from("classes").insert(fields);
   if (error) return { error: error.message };
+  const returnTo = String(formData.get("return_to") ?? "").trim();
+  if (returnTo) revalidatePath(`/${locale}${returnTo}`);
   revalidatePath(`/${locale}/dashboard/admin/classes`);
-  redirect(`/${locale}/dashboard/admin/classes`);
+  redirect(`/${locale}${returnTo || "/dashboard/admin/classes"}`);
 }
 
 export async function updateClass(
@@ -45,14 +50,18 @@ export async function updateClass(
   const supabase = await createClient();
   const { error } = await supabase.from("classes").update(readClassFields(formData)).eq("id", id);
   if (error) return { error: error.message };
+  const returnTo = String(formData.get("return_to") ?? "").trim();
+  if (returnTo) revalidatePath(`/${locale}${returnTo}`);
   revalidatePath(`/${locale}/dashboard/admin/classes`);
-  redirect(`/${locale}/dashboard/admin/classes`);
+  redirect(`/${locale}${returnTo || "/dashboard/admin/classes"}`);
 }
 
-export async function deleteClass(locale: Locale, id: string): Promise<void> {
+export async function deleteClass(locale: Locale, id: string, returnTo?: string): Promise<void> {
   const supabase = await createClient();
   await supabase.from("classes").delete().eq("id", id);
+  if (returnTo) revalidatePath(`/${locale}${returnTo}`);
   revalidatePath(`/${locale}/dashboard/admin/classes`);
+  redirect(`/${locale}${returnTo || "/dashboard/admin/classes"}`);
 }
 
 export type EnrollState = { error?: string };

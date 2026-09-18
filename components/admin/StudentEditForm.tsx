@@ -45,6 +45,7 @@ export function StudentEditForm({
         note={p.avatarNote}
         chooseLabel={a.chooseFile}
         changeLabel={a.changeFile}
+        removeLabel={a.removePicture}
         uploadingLabel={a.uploading}
       />
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}

@@ -35,7 +35,7 @@ export function CourseDiscovery({
               return (
                 <li key={cat.slug}>
                   <Link
-                    href={href(locale, `/courses?lang=${cat.language}`)}
+                    href={href(locale, `/courses?filter=${cat.slug}`)}
                     onMouseEnter={() => setActive(i)}
                     onFocus={() => setActive(i)}
                     className="group flex items-center justify-between border-b border-line py-5 transition-colors"
@@ -85,7 +85,7 @@ export function CourseDiscovery({
               </div>
 
               <Link
-                href={href(locale, `/courses?lang=${current.language}`)}
+                href={href(locale, `/courses?filter=${current.slug}`)}
                 className="group inline-flex w-fit items-center gap-2 text-[0.95rem] font-medium text-ink"
               >
                 <span className="bg-[linear-gradient(var(--color-accent),var(--color-accent))] bg-[length:100%_2px] bg-[position:0_100%] bg-no-repeat pb-1">
@@ -105,7 +105,7 @@ export function CourseDiscovery({
             {categories.map((cat, i) => (
               <Link
                 key={cat.slug}
-                href={href(locale, `/courses?lang=${cat.language}`)}
+                href={href(locale, `/courses?filter=${cat.slug}`)}
                 className="relative flex min-w-[15rem] snap-start flex-col justify-between rounded-sm border border-line bg-sand p-6"
               >
                 <div className="flex items-center justify-between">

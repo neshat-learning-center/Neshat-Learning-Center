@@ -63,4 +63,5 @@ export async function deleteBook(locale: Locale, id: string): Promise<void> {
   const supabase = await createClient();
   await supabase.from("books").delete().eq("id", id);
   revalidatePath(`/${locale}/dashboard/admin/books`);
+  redirect(`/${locale}/dashboard/admin/books`);
 }

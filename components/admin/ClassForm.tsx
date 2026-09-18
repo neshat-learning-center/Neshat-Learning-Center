@@ -13,12 +13,20 @@ export function ClassForm({
   klass,
   courses,
   teachers,
+  lockedCourseId,
+  returnTo,
 }: {
   dict: Dictionary;
   locale: Locale;
   klass?: ClassRow;
-  courses: { id: string; title: string }[];
+  courses?: { id: string; title: string }[];
   teachers: { id: string; name: string }[];
+  /** When set (e.g. this form is embedded on that course's own edit page),
+   * the course is fixed and the picker is hidden instead of shown. */
+  lockedCourseId?: string;
+  /** Where to send the admin back after saving, e.g. the course edit page
+   * this form is embedded on — defaults to the classes list. */
+  returnTo?: string;
 }) {
   const action = klass ? updateClass.bind(null, locale, klass.id) : createClass.bind(null, locale);
   const [state, formAction, pending] = useActionState<AdminFormState, FormData>(action, {});
@@ -26,21 +34,26 @@ export function ClassForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
+      {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
       <Field label={dict.dash.name}>
         <TextInput name="title" required defaultValue={klass?.title ?? ""} />
       </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.course}>
-          <Select name="course_id" defaultValue={klass?.course_id ?? ""}>
-            <option value="">{a.noCourse}</option>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        {lockedCourseId ? (
+          <input type="hidden" name="course_id" value={lockedCourseId} />
+        ) : (
+          <Field label={a.course}>
+            <Select name="course_id" defaultValue={klass?.course_id ?? ""}>
+              <option value="">{a.noCourse}</option>
+              {courses?.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
         <Field label={a.teacher}>
           <Select name="teacher_id" defaultValue={klass?.teacher_id ?? ""}>
             <option value="">{a.noTeacher}</option>
@@ -71,10 +84,14 @@ export function ClassForm({
             <option value="cancelled">{a.statusCancelled}</option>
           </Select>
         </Field>
-        <Field label={a.onlineMeetingUrl}>
-          <TextInput name="online_meeting_url" dir="ltr" className="text-start" defaultValue={klass?.online_meeting_url ?? ""} />
+        <Field label={a.capacity}>
+          <TextInput name="capacity" type="number" min={0} dir="ltr" className="text-start" defaultValue={klass?.capacity ?? ""} />
         </Field>
       </div>
+
+      <Field label={a.onlineMeetingUrl}>
+        <TextInput name="online_meeting_url" dir="ltr" className="text-start" defaultValue={klass?.online_meeting_url ?? ""} />
+      </Field>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <SubmitButton pending={pending}>{pending ? a.saving : a.save}</SubmitButton>

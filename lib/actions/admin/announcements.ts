@@ -54,4 +54,5 @@ export async function deleteAnnouncement(locale: Locale, id: string): Promise<vo
   const supabase = await createClient();
   await supabase.from("announcements").delete().eq("id", id);
   revalidatePath(`/${locale}/dashboard/admin/announcements`);
+  redirect(`/${locale}/dashboard/admin/announcements`);
 }

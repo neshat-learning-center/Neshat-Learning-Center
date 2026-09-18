@@ -22,6 +22,7 @@ export function FileUploadField({
   uploadingLabel = "…",
   chooseLabel = "انتخاب فایل",
   changeLabel = "تغییر فایل",
+  removeLabel = "حذف تصویر",
   storePathOnly = false,
 }: {
   bucket: "avatars" | "books" | "materials" | "homework";
@@ -35,6 +36,10 @@ export function FileUploadField({
   uploadingLabel?: string;
   chooseLabel?: string;
   changeLabel?: string;
+  /** Only ever shown for previewAsImage fields — clears the picture so
+   * saving the form removes it (no confirm dialog: nothing takes effect
+   * until the surrounding form is actually submitted). */
+  removeLabel?: string;
   /** For private buckets (e.g. "materials") — store the raw storage path
    * instead of a public URL, since the bucket has no public URL to give. A
    * signed URL is generated server-side for authorized readers at display time. */
@@ -82,22 +87,34 @@ export function FileUploadField({
         <img src={url} alt="" className="h-20 w-20 rounded-full border border-line object-cover" />
       )}
 
-      <label
-        htmlFor={inputId}
-        className={`flex w-fit cursor-pointer items-center gap-2 rounded-md border border-line-strong px-4 py-2.5 text-sm text-ink transition-colors hover:border-ink ${
-          !configured || uploading ? "pointer-events-none opacity-50" : ""
-        }`}
-      >
-        {uploading ? uploadingLabel : url ? changeLabel : chooseLabel}
-        <input
-          id={inputId}
-          type="file"
-          accept={accept}
-          className="hidden"
-          disabled={!configured || uploading}
-          onChange={handleChange}
-        />
-      </label>
+      <div className="flex items-center gap-3">
+        <label
+          htmlFor={inputId}
+          className={`flex w-fit cursor-pointer items-center gap-2 rounded-md border border-line-strong px-4 py-2.5 text-sm text-ink transition-colors hover:border-ink ${
+            !configured || uploading ? "pointer-events-none opacity-50" : ""
+          }`}
+        >
+          {uploading ? uploadingLabel : url ? changeLabel : chooseLabel}
+          <input
+            id={inputId}
+            type="file"
+            accept={accept}
+            className="hidden"
+            disabled={!configured || uploading}
+            onChange={handleChange}
+          />
+        </label>
+
+        {previewAsImage && url && !uploading && (
+          <button
+            type="button"
+            onClick={() => setUrl("")}
+            className="text-sm text-red-600 hover:underline"
+          >
+            {removeLabel}
+          </button>
+        )}
+      </div>
 
       {!previewAsImage && url && !storePathOnly && (
         <a href={url} target="_blank" rel="noopener noreferrer" className="truncate text-xs text-accent-deep hover:underline">
