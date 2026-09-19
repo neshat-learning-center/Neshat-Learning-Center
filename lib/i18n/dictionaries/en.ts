@@ -333,6 +333,12 @@ export const en: Dictionary = {
     saved: "Changes saved.",
     demoNotice: "There's no real profile in demo mode. Connect Supabase to edit a profile.",
     publicProfile: "Public teacher profile",
+    changePassword: "Change password",
+    newPassword: "New password",
+    confirmPassword: "Confirm new password",
+    passwordUpdated: "Password updated.",
+    passwordMismatch: "Passwords don't match.",
+    passwordTooShort: "Password must be at least 6 characters.",
   },
   admin: {
     notConnected: "Connect Supabase first to manage this section.",

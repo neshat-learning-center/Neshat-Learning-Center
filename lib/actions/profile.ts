@@ -51,3 +51,28 @@ export async function updateProfile(
   revalidatePath(`/${locale}/dashboard/profile`);
   return { success: true };
 }
+
+export async function changePassword(
+  _locale: Locale,
+  _prev: ProfileFormState,
+  formData: FormData,
+): Promise<ProfileFormState> {
+  if (!isSupabaseConfigured()) return { error: "not-configured" };
+
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (password.length < 6) return { error: "password-too-short" };
+  if (password !== confirmPassword) return { error: "password-mismatch" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "not-authenticated" };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+
+  return { success: true };
+}

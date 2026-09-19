@@ -340,6 +340,12 @@ export const fa = {
     saved: "تغییرات ذخیره شد.",
     demoNotice: "در حالت نمایشی، پروفایل واقعی وجود ندارد. برای ویرایش پروفایل، Supabase را متصل کن.",
     publicProfile: "نمایهٔ عمومی مدرس",
+    changePassword: "تغییر رمز عبور",
+    newPassword: "رمز عبور جدید",
+    confirmPassword: "تکرار رمز عبور جدید",
+    passwordUpdated: "رمز عبور به‌روزرسانی شد.",
+    passwordMismatch: "رمزهای عبور یکسان نیستند.",
+    passwordTooShort: "رمز عبور باید حداقل ۶ کاراکتر باشد.",
   },
   admin: {
     notConnected: "برای مدیریت این بخش، ابتدا Supabase را متصل کن.",

@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { getMyProfile } from "@/lib/dashboard/data";
 import { href } from "@/lib/utils";
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
+import { ChangePasswordForm } from "@/components/dashboard/ChangePasswordForm";
 
 export default async function ProfilePage({
   params,
@@ -29,7 +30,12 @@ export default async function ProfilePage({
 
       <div className="mt-8">
         {profile ? (
-          <ProfileForm dict={dict} locale={l} role={session.role} email={session.email} profile={profile} />
+          <>
+            <ProfileForm dict={dict} locale={l} role={session.role} email={session.email} profile={profile} />
+            <div className="mt-12 border-t border-line pt-10">
+              <ChangePasswordForm dict={dict} locale={l} />
+            </div>
+          </>
         ) : (
           <div className="rounded-md border border-line bg-sand p-5 text-sm text-ink-soft">
             {p.demoNotice}
