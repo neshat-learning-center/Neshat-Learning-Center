@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isServiceRoleConfigured } from "@/lib/supabase/config";
+import { isServiceRoleConfigured, isSupabaseConfigured } from "@/lib/supabase/config";
 
 export interface EnrollableClass {
   id: string;
@@ -20,6 +20,7 @@ export interface EnrollableClass {
 /** The real Supabase course row id for a course slug — null if this course
  * only exists as seed/demo content (no live classes to enroll into). */
 export async function getCourseIdBySlug(slug: string): Promise<string | null> {
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const { data } = await supabase.from("courses").select("id").eq("slug", slug).maybeSingle();
   return data?.id ?? null;
@@ -32,6 +33,7 @@ export async function listEnrollableClasses(
   courseId: string,
   studentId: string | null,
 ): Promise<EnrollableClass[]> {
+  if (!isSupabaseConfigured()) return [];
   const supabase = await createClient();
   const { data: classes } = await supabase
     .from("classes")
