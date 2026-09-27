@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { CourseRow } from "@/lib/supabase/types";
 import { LANGUAGES } from "@/content/languages";
 import { COURSE_CATEGORIES } from "@/content/course-categories";
-import { Field, TextInput, TextArea, Select, SubmitButton } from "@/components/admin/fields";
+import { Field, TextInput, TextArea, Select, MultiSelect, SubmitButton } from "@/components/admin/fields";
 import { FileUploadField } from "@/components/admin/FileUploadField";
 import { createCourse, updateCourse, type AdminFormState } from "@/lib/actions/admin/courses";
 
@@ -105,14 +105,13 @@ export function CourseForm({
 
       {books.length > 0 && (
         <Field label={a.books}>
-          <div className="flex flex-col gap-2 rounded-md border border-line-strong p-4">
-            {books.map((b) => (
-              <label key={b.id} className="flex items-center gap-2 text-sm text-ink">
-                <input type="checkbox" name="book_ids" value={b.id} defaultChecked={selectedBookIds.includes(b.id)} />
-                {b.title}
-              </label>
-            ))}
-          </div>
+          <MultiSelect
+            name="book_ids"
+            options={books.map((b) => ({ value: b.id, label: b.title }))}
+            defaultValues={selectedBookIds}
+            placeholder={a.noBooksSelected}
+            searchPlaceholder={a.searchBooks}
+          />
         </Field>
       )}
 

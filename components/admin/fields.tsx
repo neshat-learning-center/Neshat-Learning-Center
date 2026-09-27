@@ -195,6 +195,122 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
   );
 }
 
+/**
+ * A checkbox-based multi-select — same trigger/panel language as Select, but
+ * for "pick any number of these" fields (e.g. a course's recommended books)
+ * that used to be rendered as one giant, ever-growing list of checkboxes.
+ * Real checkboxes live inside the panel, so <form action> submission (via
+ * `formData.getAll(name)`) needs no change at any call site.
+ */
+export function MultiSelect({
+  name,
+  options,
+  defaultValues = [],
+  placeholder = "—",
+  searchPlaceholder = "جست‌وجو…",
+}: {
+  name: string;
+  options: { value: string; label: string }[];
+  defaultValues?: string[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+}) {
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(defaultValues));
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocMouseDown(e: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, [open]);
+
+  function toggle(value: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return next;
+    });
+  }
+
+  const filtered = query.trim()
+    ? options.filter((o) => o.label.toLowerCase().includes(query.trim().toLowerCase()))
+    : options;
+
+  const selectedLabels = options.filter((o) => selected.has(o.value)).map((o) => o.label);
+  const summary =
+    selectedLabels.length === 0
+      ? placeholder
+      : selectedLabels.length <= 2
+        ? selectedLabels.join("، ")
+        : `${selectedLabels.slice(0, 2).join("، ")} +${selectedLabels.length - 2}`;
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`${base} flex cursor-pointer items-center justify-between gap-2 text-start`}
+      >
+        <span className={`truncate ${selectedLabels.length ? "" : "text-muted/70"}`}>{summary}</span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 16 16"
+          fill="none"
+          className={`shrink-0 text-muted transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        >
+          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-md border border-line-strong bg-paper shadow-lg">
+          {options.length > 8 && (
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={searchPlaceholder}
+              autoFocus
+              className="w-full border-b border-line px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted/60"
+            />
+          )}
+          <div className="dropdown-scroll max-h-64 overflow-y-auto p-1.5">
+            {filtered.length === 0 ? (
+              <p className="px-3 py-2.5 text-sm text-muted">—</p>
+            ) : (
+              filtered.map((o) => (
+                <label
+                  key={o.value}
+                  className="flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2.5 text-sm text-ink-soft transition-colors hover:bg-sand"
+                >
+                  <input
+                    type="checkbox"
+                    name={name}
+                    value={o.value}
+                    checked={selected.has(o.value)}
+                    onChange={() => toggle(o.value)}
+                    className="shrink-0"
+                  />
+                  <span className="truncate">{o.label}</span>
+                </label>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SubmitButton({ children, pending }: { children: ReactNode; pending?: boolean }) {
   return (
     <button

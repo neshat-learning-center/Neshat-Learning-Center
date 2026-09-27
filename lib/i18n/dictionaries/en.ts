@@ -394,6 +394,8 @@ export const en: Dictionary = {
     teacher: "Teacher",
     noTeacher: "No teacher",
     books: "Recommended books",
+    noBooksSelected: "Choose books…",
+    searchBooks: "Search books…",
     coverImage: "Cover picture",
     classesForCourse: "Classes for this course",
     addClass: "Add a class",

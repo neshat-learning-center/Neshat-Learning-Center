@@ -401,6 +401,8 @@ export const fa = {
     teacher: "مدرس",
     noTeacher: "بدون مدرس",
     books: "کتاب‌های پیشنهادی",
+    noBooksSelected: "انتخاب کتاب…",
+    searchBooks: "جست‌وجوی کتاب…",
     coverImage: "تصویر جلد",
     classesForCourse: "کلاس‌های این دوره",
     addClass: "افزودن کلاس",
