@@ -458,6 +458,7 @@ export const fa = {
     manageStudents: "مدیریت زبان‌آموزان",
     manageTeachers: "مدیریت اساتید",
     manageCourses: "مدیریت دوره‌ها",
+    addAnotherCourse: "افزودن دورهٔ دیگر",
     manageClasses: "مدیریت کلاس‌ها",
     manageBooks: "مدیریت کتاب‌ها",
     manageAnnouncements: "مدیریت اطلاعیه‌ها",

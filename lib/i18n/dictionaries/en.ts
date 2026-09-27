@@ -451,6 +451,7 @@ export const en: Dictionary = {
     manageStudents: "Manage students",
     manageTeachers: "Manage teachers",
     manageCourses: "Manage courses",
+    addAnotherCourse: "Add another course",
     manageClasses: "Manage classes",
     manageBooks: "Manage books",
     manageAnnouncements: "Manage announcements",

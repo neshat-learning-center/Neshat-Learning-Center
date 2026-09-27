@@ -47,6 +47,21 @@ export default async function EditCoursePage({
 
   return (
     <div className="max-w-2xl">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <Link
+          href={href(l, "/dashboard/admin/courses")}
+          className="text-sm text-ink-soft transition-colors hover:text-ink hover:underline"
+        >
+          ← {a.manageCourses}
+        </Link>
+        <Link
+          href={href(l, "/dashboard/admin/courses/new")}
+          className="rounded-full border border-line-strong px-4 py-2 text-sm text-ink transition-colors hover:border-ink"
+        >
+          + {a.addAnotherCourse}
+        </Link>
+      </div>
+
       <EditPageHeader
         title={course.title?.fa ?? course.title?.en}
         deleteAction={deleteCourse.bind(null, l, course.id)}
@@ -124,6 +139,15 @@ export default async function EditCoursePage({
             />
           </div>
         </div>
+      </div>
+
+      <div className="mt-10 flex justify-center">
+        <Link
+          href={href(l, "/dashboard/admin/courses/new")}
+          className="rounded-full bg-accent px-6 py-3 text-sm font-medium text-slate transition-colors hover:bg-accent-deep"
+        >
+          + {a.addAnotherCourse}
+        </Link>
       </div>
     </div>
   );
