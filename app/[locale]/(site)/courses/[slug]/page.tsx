@@ -19,6 +19,7 @@ import { href } from "@/lib/utils";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { BookCover } from "@/components/ui/BookCover";
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => seedCourses.map((c) => ({ locale, slug: c.slug })));
@@ -249,21 +250,23 @@ export default async function CourseDetail({
             {books.length > 0 && (
               <div className="mt-14">
                 <h3 className="eyebrow">{dict.courses.books}</h3>
-                <ul className="mt-5 flex flex-col">
-                  {books.map((b) => (
-                    <li key={b.slug}>
-                      <Link
-                        href={href(l, `/books/${b.slug}`)}
-                        className="group flex items-center justify-between border-t border-line py-5 last:border-b"
-                      >
-                        <span className="text-lg font-bold text-ink transition-colors group-hover:text-accent-deep">
+                <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
+                  {books.map((b, i) => (
+                    <Reveal key={b.slug} delay={(i % 3) * 70}>
+                      <Link href={href(l, `/books/${b.slug}`)} className="group block">
+                        <div className="transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-translate-y-2">
+                          <BookCover book={b} locale={l} />
+                        </div>
+                        <h4 className="mt-4 font-bold text-ink transition-colors group-hover:text-accent-deep">
                           {pick(b.title, l)}
-                        </span>
-                        <span className="text-sm text-muted">{pick(b.kind, l)}</span>
+                        </h4>
+                        <p className="mt-1 text-sm text-muted">
+                          {languageLabel(b.language, l)} · {pick(b.level, l)}
+                        </p>
                       </Link>
-                    </li>
+                    </Reveal>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 

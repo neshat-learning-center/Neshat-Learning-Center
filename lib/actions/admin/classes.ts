@@ -16,7 +16,6 @@ function readClassFields(formData: FormData) {
   const capacity = String(formData.get("capacity") ?? "").trim();
   const mode = (String(formData.get("mode") ?? "offline").trim() as ClassMode) || "offline";
   return {
-    title: String(formData.get("title") ?? "").trim(),
     course_id: course_id || null,
     teacher_id: teacher_id || null,
     mode,
@@ -32,6 +31,24 @@ function readClassFields(formData: FormData) {
   };
 }
 
+/** Classes aren't named individually by the admin — a class is just "this
+ * course, at this time", so its (still-required, plain-text) `title` column
+ * is derived from the course it belongs to plus its schedule, which also
+ * tells apart multiple classes of the same course. */
+async function buildClassTitle(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  courseId: string | null,
+  schedule: string | null,
+): Promise<string> {
+  let courseTitle = "";
+  if (courseId) {
+    const { data } = await supabase.from("courses").select("title").eq("id", courseId).maybeSingle();
+    courseTitle = data?.title?.fa || data?.title?.en || "";
+  }
+  if (courseTitle && schedule) return `${courseTitle} — ${schedule}`;
+  return courseTitle || schedule || "کلاس";
+}
+
 export async function createClass(
   locale: Locale,
   _prev: AdminFormState,
@@ -39,7 +56,8 @@ export async function createClass(
 ): Promise<AdminFormState> {
   const supabase = await createClient();
   const fields = readClassFields(formData);
-  const { error } = await supabase.from("classes").insert(fields);
+  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule);
+  const { error } = await supabase.from("classes").insert({ ...fields, title });
   if (error) return { error: error.message };
   const returnTo = String(formData.get("return_to") ?? "").trim();
   if (returnTo) revalidatePath(`/${locale}${returnTo}`);
@@ -54,7 +72,9 @@ export async function updateClass(
   formData: FormData,
 ): Promise<AdminFormState> {
   const supabase = await createClient();
-  const { error } = await supabase.from("classes").update(readClassFields(formData)).eq("id", id);
+  const fields = readClassFields(formData);
+  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule);
+  const { error } = await supabase.from("classes").update({ ...fields, title }).eq("id", id);
   if (error) return { error: error.message };
   const returnTo = String(formData.get("return_to") ?? "").trim();
   if (returnTo) revalidatePath(`/${locale}${returnTo}`);

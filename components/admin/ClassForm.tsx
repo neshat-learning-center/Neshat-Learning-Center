@@ -36,9 +36,6 @@ export function ClassForm({
   return (
     <form action={formAction} className="flex flex-col gap-6">
       {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
-      <Field label={dict.dash.name}>
-        <TextInput name="title" required defaultValue={klass?.title ?? ""} />
-      </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {lockedCourseId ? (
