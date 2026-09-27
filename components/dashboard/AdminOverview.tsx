@@ -34,6 +34,16 @@ function ManageLink({ locale, route, label }: { locale: Locale; route: string; l
   );
 }
 
+function ViewAllLink({ locale, route, label }: { locale: Locale; route: string; label: string }) {
+  return (
+    <Link href={href(locale, route)} className="text-sm font-medium text-accent-deep hover:underline">
+      {label}
+    </Link>
+  );
+}
+
+const OVERVIEW_LIMIT = 5;
+
 const statusTone: Record<string, string> = {
   active: "bg-accent-wash text-accent-deep",
   upcoming: "bg-sand text-ink-soft",
@@ -110,7 +120,11 @@ export async function AdminOverview({
         <Panel
           id="leads"
           title={a.recentLeads}
-          action={<Link href={href(locale, "/dashboard/admin/leads")} className="text-sm font-medium text-accent-deep hover:underline">{a.viewAll}</Link>}
+          action={
+            pendingLeads.length > OVERVIEW_LIMIT && (
+              <ViewAllLink locale={locale} route="/dashboard/admin/leads" label={a.viewAll} />
+            )
+          }
         >
           {pendingLeads.length === 0 ? (
             <p className="rounded-lg border border-dashed border-line-strong p-6 text-center text-sm text-muted">
@@ -118,7 +132,7 @@ export async function AdminOverview({
             </p>
           ) : (
             <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
-              {pendingLeads.slice(0, 5).map((lead) => (
+              {pendingLeads.slice(0, OVERVIEW_LIMIT).map((lead) => (
                 <li key={lead.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                   <div>
                     <p className="font-medium text-ink">{lead.name}</p>
@@ -146,7 +160,11 @@ export async function AdminOverview({
         <Panel
           id="students"
           title={configured ? a.recentStudents : d.students}
-          action={<Link href={href(locale, "/dashboard/admin/students")} className="text-sm font-medium text-accent-deep hover:underline">{a.viewAll}</Link>}
+          action={
+            recentStudents.length > OVERVIEW_LIMIT && (
+              <ViewAllLink locale={locale} route="/dashboard/admin/students" label={a.viewAll} />
+            )
+          }
         >
           {!configured ? (
             <ManageLink locale={locale} route="/dashboard/admin/students" label={a.manageStudents} />
@@ -156,7 +174,7 @@ export async function AdminOverview({
             </p>
           ) : (
             <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
-              {recentStudents.slice(0, 5).map((s) => (
+              {recentStudents.slice(0, OVERVIEW_LIMIT).map((s) => (
                 <li key={s.id} className="flex items-center gap-3 px-5 py-3.5">
                   <Avatar name={s.full_name ?? "?"} src={s.avatar_url} size={36} />
                   <div className="min-w-0 flex-1">
@@ -174,7 +192,14 @@ export async function AdminOverview({
         <Panel
           id="classes"
           title={configured ? a.recentClasses : d.classes}
-          action={<AddLink locale={locale} route="/dashboard/admin/classes/new" label={a.add} />}
+          action={
+            <div className="flex items-center gap-4">
+              {recentClasses.length > OVERVIEW_LIMIT && (
+                <ViewAllLink locale={locale} route="/dashboard/admin/classes" label={a.viewAll} />
+              )}
+              <AddLink locale={locale} route="/dashboard/admin/classes/new" label={a.add} />
+            </div>
+          }
         >
           {!configured ? (
             <ManageLink locale={locale} route="/dashboard/admin/classes" label={a.manageClasses} />
@@ -184,7 +209,7 @@ export async function AdminOverview({
             </p>
           ) : (
             <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
-              {recentClasses.slice(0, 5).map((c) => (
+              {recentClasses.slice(0, OVERVIEW_LIMIT).map((c) => (
                 <li key={c.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
                   <div className="min-w-0">
                     <p className="truncate font-medium text-ink">{c.title}</p>
@@ -203,7 +228,14 @@ export async function AdminOverview({
       <Panel
         id="teachers"
         title={d.teachers}
-        action={<AddLink locale={locale} route="/dashboard/admin/teachers/new" label={a.add} />}
+        action={
+          <div className="flex items-center gap-4">
+            {teachers.length > OVERVIEW_LIMIT && (
+              <ViewAllLink locale={locale} route="/dashboard/admin/teachers" label={a.viewAll} />
+            )}
+            <AddLink locale={locale} route="/dashboard/admin/teachers/new" label={a.add} />
+          </div>
+        }
       >
         <div className="overflow-hidden rounded-lg border border-line bg-canvas">
           <table className="w-full text-sm">
@@ -214,7 +246,7 @@ export async function AdminOverview({
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {teachers.map((t) => (
+              {teachers.slice(0, OVERVIEW_LIMIT).map((t) => (
                 <tr key={t.slug}>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
@@ -233,7 +265,14 @@ export async function AdminOverview({
       <Panel
         id="courses"
         title={d.courses}
-        action={<AddLink locale={locale} route="/dashboard/admin/courses/new" label={a.add} />}
+        action={
+          <div className="flex items-center gap-4">
+            {courses.length > OVERVIEW_LIMIT && (
+              <ViewAllLink locale={locale} route="/dashboard/admin/courses" label={a.viewAll} />
+            )}
+            <AddLink locale={locale} route="/dashboard/admin/courses/new" label={a.add} />
+          </div>
+        }
       >
         <div className="overflow-hidden rounded-lg border border-line bg-canvas">
           <table className="w-full text-sm">
@@ -245,7 +284,7 @@ export async function AdminOverview({
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {courses.map((c) => (
+              {courses.slice(0, OVERVIEW_LIMIT).map((c) => (
                 <tr key={c.slug}>
                   <td className="px-5 py-3 font-medium text-ink">{pick(c.title, locale)}</td>
                   <td className="px-5 py-3">
@@ -264,7 +303,14 @@ export async function AdminOverview({
       <Panel
         id="books"
         title={d.books}
-        action={<AddLink locale={locale} route="/dashboard/admin/books/new" label={a.add} />}
+        action={
+          <div className="flex items-center gap-4">
+            {books.length > OVERVIEW_LIMIT && (
+              <ViewAllLink locale={locale} route="/dashboard/admin/books" label={a.viewAll} />
+            )}
+            <AddLink locale={locale} route="/dashboard/admin/books/new" label={a.add} />
+          </div>
+        }
       >
         <div className="overflow-hidden rounded-lg border border-line bg-canvas">
           <table className="w-full text-sm">
@@ -276,7 +322,7 @@ export async function AdminOverview({
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {books.map((b) => (
+              {books.slice(0, OVERVIEW_LIMIT).map((b) => (
                 <tr key={b.slug}>
                   <td className="px-5 py-3 font-medium text-ink">{pick(b.title, locale)}</td>
                   <td className="px-5 py-3 text-ink-soft">{languageLabel(b.language, locale)}</td>
@@ -292,7 +338,14 @@ export async function AdminOverview({
         <Panel
           id="announcements"
           title={configured ? a.recentAnnouncements : d.announcements}
-          action={<AddLink locale={locale} route="/dashboard/admin/announcements/new" label={a.add} />}
+          action={
+            <div className="flex items-center gap-4">
+              {recentAnnouncements.length > OVERVIEW_LIMIT && (
+                <ViewAllLink locale={locale} route="/dashboard/admin/announcements" label={a.viewAll} />
+              )}
+              <AddLink locale={locale} route="/dashboard/admin/announcements/new" label={a.add} />
+            </div>
+          }
         >
           {!configured ? (
             <ManageLink locale={locale} route="/dashboard/admin/announcements" label={a.manageAnnouncements} />
@@ -302,7 +355,7 @@ export async function AdminOverview({
             </p>
           ) : (
             <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
-              {recentAnnouncements.slice(0, 4).map((post) => (
+              {recentAnnouncements.slice(0, OVERVIEW_LIMIT).map((post) => (
                 <li key={post.id} className="px-5 py-3.5">
                   <p className="truncate font-medium text-ink">{post.title}</p>
                   <p className="mt-0.5 text-xs text-muted">{relativeTime(post.created_at, locale)}</p>
@@ -315,7 +368,14 @@ export async function AdminOverview({
         <Panel
           id="journal"
           title={configured ? a.recentJournal : d.journal}
-          action={<AddLink locale={locale} route="/dashboard/admin/journal/new" label={a.add} />}
+          action={
+            <div className="flex items-center gap-4">
+              {recentPosts.length > OVERVIEW_LIMIT && (
+                <ViewAllLink locale={locale} route="/dashboard/admin/journal" label={a.viewAll} />
+              )}
+              <AddLink locale={locale} route="/dashboard/admin/journal/new" label={a.add} />
+            </div>
+          }
         >
           {!configured ? (
             <ManageLink locale={locale} route="/dashboard/admin/journal" label={a.manageJournal} />
@@ -325,7 +385,7 @@ export async function AdminOverview({
             </p>
           ) : (
             <ul className="divide-y divide-line rounded-lg border border-line bg-canvas">
-              {recentPosts.slice(0, 4).map((post) => (
+              {recentPosts.slice(0, OVERVIEW_LIMIT).map((post) => (
                 <li key={post.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
                   <span className="truncate font-medium text-ink">{pick(post.title, locale)}</span>
                   <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${post.published ? "bg-accent-wash text-accent-deep" : "bg-sand text-muted"}`}>
