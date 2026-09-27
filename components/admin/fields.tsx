@@ -172,7 +172,15 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
               role="option"
               aria-selected={o.value === current}
               onMouseEnter={() => setActiveIndex(i)}
-              onClick={() => !o.disabled && commit(o.value)}
+              onClick={(e) => {
+                // this list lives inside a <Field>'s <label> — a plain <li>
+                // isn't a form control, so the browser's native "clicking a
+                // label activates its control" behavior re-forwards the same
+                // click to the trigger button right after commit() closes
+                // the panel, reopening it. Stop that default forwarding.
+                e.preventDefault();
+                if (!o.disabled) commit(o.value);
+              }}
               className={`flex cursor-pointer items-center justify-between gap-2 rounded-sm px-3 py-2.5 text-sm transition-colors ${
                 o.disabled
                   ? "cursor-not-allowed text-muted/60"
