@@ -207,8 +207,11 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
  * A checkbox-based multi-select — same trigger/panel language as Select, but
  * for "pick any number of these" fields (e.g. a course's recommended books)
  * that used to be rendered as one giant, ever-growing list of checkboxes.
- * Real checkboxes live inside the panel, so <form action> submission (via
- * `formData.getAll(name)`) needs no change at any call site.
+ * The visible checkboxes only exist in the DOM while the panel is open, so
+ * they can't be what <form action> actually reads — a value checked and then
+ * closed (or never re-opened before Save) would vanish from the submission
+ * entirely. A set of always-present hidden inputs mirroring `selected` is
+ * what really carries the value; `formData.getAll(name)` needs no change.
  */
 export function MultiSelect({
   name,
@@ -260,6 +263,9 @@ export function MultiSelect({
 
   return (
     <div ref={rootRef} className="relative">
+      {[...selected].map((value) => (
+        <input key={value} type="hidden" name={name} value={value} />
+      ))}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -302,8 +308,6 @@ export function MultiSelect({
                 >
                   <input
                     type="checkbox"
-                    name={name}
-                    value={o.value}
                     checked={selected.has(o.value)}
                     onChange={() => toggle(o.value)}
                     className="shrink-0"
