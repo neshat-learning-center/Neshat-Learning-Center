@@ -46,6 +46,19 @@ const ageLabel = (age: Course["age"], locale: Locale) =>
     adults: { fa: "بزرگسالان", en: "Adults" },
   })[age][locale];
 
+/** `start_date` is a bare "YYYY-MM-DD" calendar date, not a moment in time —
+ * force UTC so it never shifts a day depending on the server's timezone. */
+const formatStartDate = (isoDate: string, locale: Locale) =>
+  new Date(`${isoDate}T00:00:00Z`).toLocaleDateString(locale === "fa" ? "fa-IR" : "en-US", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+/** `start_time` comes back as "HH:MM:SS" — just trim the seconds. */
+const formatStartTime = (time: string) => time.slice(0, 5);
+
 export default async function CourseDetail({
   params,
 }: {
@@ -135,6 +148,20 @@ export default async function CourseDetail({
                             <div className="flex items-center justify-between gap-2">
                               <dt className="text-muted">{dict.courses.teacher}</dt>
                               <dd className="font-medium text-ink">{c.teacherName}</dd>
+                            </div>
+                          )}
+                          {c.startDate && (
+                            <div className="flex items-center justify-between gap-2">
+                              <dt className="text-muted">{dict.courses.startDate}</dt>
+                              <dd className="font-medium text-ink">{formatStartDate(c.startDate, l)}</dd>
+                            </div>
+                          )}
+                          {c.startTime && (
+                            <div className="flex items-center justify-between gap-2">
+                              <dt className="text-muted">{dict.courses.startTime}</dt>
+                              <dd className="font-medium text-ink" dir="ltr">
+                                {formatStartTime(c.startTime)}
+                              </dd>
                             </div>
                           )}
                           {c.classroom && (

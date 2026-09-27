@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-import type { ClassRow } from "@/lib/supabase/types";
+import type { ClassMode, ClassRow } from "@/lib/supabase/types";
 import { Field, TextInput, Select, SubmitButton } from "@/components/admin/fields";
 import { createClass, updateClass, type AdminFormState } from "@/lib/actions/admin/classes";
 
@@ -30,6 +30,7 @@ export function ClassForm({
 }) {
   const action = klass ? updateClass.bind(null, locale, klass.id) : createClass.bind(null, locale);
   const [state, formAction, pending] = useActionState<AdminFormState, FormData>(action, {});
+  const [mode, setMode] = useState<ClassMode>(klass?.mode ?? "offline");
   const a = dict.admin;
 
   return (
@@ -67,13 +68,35 @@ export function ClassForm({
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.classroom}>
-          <TextInput name="classroom" defaultValue={klass?.classroom ?? ""} />
+        <Field label={a.mode}>
+          <Select name="mode" defaultValue={mode} onChange={(e) => setMode(e.target.value as ClassMode)}>
+            <option value="offline">{a.inPerson}</option>
+            <option value="online">{a.online}</option>
+          </Select>
         </Field>
-        <Field label={dict.courses.schedule}>
-          <TextInput name="schedule" defaultValue={klass?.schedule ?? ""} />
+        {mode === "offline" ? (
+          <Field label={a.classroom}>
+            <TextInput name="classroom" defaultValue={klass?.classroom ?? ""} />
+          </Field>
+        ) : (
+          <Field label={a.onlineMeetingUrl}>
+            <TextInput name="online_meeting_url" dir="ltr" className="text-start" defaultValue={klass?.online_meeting_url ?? ""} />
+          </Field>
+        )}
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        <Field label={a.startDate}>
+          <TextInput type="date" name="start_date" dir="ltr" className="text-start" defaultValue={klass?.start_date ?? ""} />
+        </Field>
+        <Field label={a.startTime}>
+          <TextInput type="time" name="start_time" dir="ltr" className="text-start" defaultValue={klass?.start_time ?? ""} />
         </Field>
       </div>
+
+      <Field label={dict.courses.schedule} note={a.scheduleNote}>
+        <TextInput name="schedule" defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
+      </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label={a.status}>
@@ -88,10 +111,6 @@ export function ClassForm({
           <TextInput name="capacity" type="number" min={0} dir="ltr" className="text-start" defaultValue={klass?.capacity ?? ""} />
         </Field>
       </div>
-
-      <Field label={a.onlineMeetingUrl}>
-        <TextInput name="online_meeting_url" dir="ltr" className="text-start" defaultValue={klass?.online_meeting_url ?? ""} />
-      </Field>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <SubmitButton pending={pending}>{pending ? a.saving : a.save}</SubmitButton>

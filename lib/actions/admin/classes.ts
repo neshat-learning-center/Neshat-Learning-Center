@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured } from "@/lib/supabase/config";
 import type { Locale } from "@/lib/i18n/config";
-import type { ClassStatus } from "@/lib/supabase/types";
+import type { ClassMode, ClassStatus } from "@/lib/supabase/types";
 
 export type AdminFormState = { error?: string };
 
@@ -14,14 +14,20 @@ function readClassFields(formData: FormData) {
   const course_id = String(formData.get("course_id") ?? "").trim();
   const teacher_id = String(formData.get("teacher_id") ?? "").trim();
   const capacity = String(formData.get("capacity") ?? "").trim();
+  const mode = (String(formData.get("mode") ?? "offline").trim() as ClassMode) || "offline";
   return {
     title: String(formData.get("title") ?? "").trim(),
     course_id: course_id || null,
     teacher_id: teacher_id || null,
-    classroom: String(formData.get("classroom") ?? "").trim() || null,
+    mode,
+    // only the field matching the chosen mode is meaningful — the form only
+    // ever shows one of the two, so drop whatever the other one held before
+    classroom: mode === "offline" ? String(formData.get("classroom") ?? "").trim() || null : null,
+    online_meeting_url: mode === "online" ? String(formData.get("online_meeting_url") ?? "").trim() || null : null,
     schedule: String(formData.get("schedule") ?? "").trim() || null,
+    start_date: String(formData.get("start_date") ?? "").trim() || null,
+    start_time: String(formData.get("start_time") ?? "").trim() || null,
     status: String(formData.get("status") ?? "upcoming") as ClassStatus,
-    online_meeting_url: String(formData.get("online_meeting_url") ?? "").trim() || null,
     capacity: capacity ? Number(capacity) : null,
   };
 }

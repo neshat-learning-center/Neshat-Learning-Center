@@ -17,6 +17,17 @@ export function href(locale: Locale, path = ""): string {
   return `/${locale}${clean}`;
 }
 
+/** A random sample of `count` items, order shuffled — for homepage previews
+ * where showing the same first few items every time would get stale. */
+export function pickRandom<T>(items: T[], count: number): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+}
+
 /** English-only slugify — used as a fallback when an admin form leaves the slug blank. */
 export function slugify(text: string): string {
   return (

@@ -3,6 +3,7 @@ import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
 import { getCategories, getCourses, getTeachers, getBooks, getPosts } from "@/lib/data/public";
+import { pickRandom } from "@/lib/utils";
 
 import { Hero } from "@/components/sections/Hero";
 import { CourseDiscovery } from "@/components/sections/CourseDiscovery";
@@ -41,7 +42,7 @@ export default async function HomePage({
       <Courses dict={dict} locale={l} courses={courses} categories={categories} />
       <Teachers dict={dict} locale={l} teachers={teachers} />
       <LearningModes dict={dict} locale={l} />
-      <Books dict={dict} locale={l} books={books} />
+      <Books dict={dict} locale={l} books={pickRandom(books, 6)} />
       <Journal dict={dict} locale={l} posts={posts} />
       <TeacherTraining dict={dict} locale={l} />
       <StudentExperience dict={dict} locale={l} />

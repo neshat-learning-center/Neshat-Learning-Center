@@ -5,6 +5,8 @@ import { isServiceRoleConfigured, isSupabaseConfigured } from "@/lib/supabase/co
 export interface EnrollableClass {
   id: string;
   schedule: string | null;
+  startDate: string | null;
+  startTime: string | null;
   teacherName: string | null;
   classroom: string | null;
   mode: "online" | "offline";
@@ -37,7 +39,7 @@ export async function listEnrollableClasses(
   const supabase = await createClient();
   const { data: classes } = await supabase
     .from("classes")
-    .select("id, schedule, classroom, online_meeting_url, capacity, teacher:profiles(full_name)")
+    .select("id, schedule, start_date, start_time, classroom, mode, online_meeting_url, capacity, teacher:profiles(full_name)")
     .eq("course_id", courseId)
     .in("status", ["upcoming", "active"]);
 
@@ -77,9 +79,11 @@ export async function listEnrollableClasses(
     return {
       id: c.id,
       schedule: c.schedule,
+      startDate: c.start_date,
+      startTime: c.start_time,
       teacherName: teacher?.full_name ?? null,
       classroom: c.classroom,
-      mode: c.online_meeting_url ? "online" : "offline",
+      mode: c.mode,
       onlineMeetingUrl: enrolled ? c.online_meeting_url : null,
       enrolled,
       capacity: c.capacity,

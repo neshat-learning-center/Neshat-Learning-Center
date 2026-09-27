@@ -5,6 +5,7 @@ import type { Localized } from "@/lib/i18n/config";
  * Regenerate with `supabase gen types typescript` once the CLI is connected.
  */
 export type Role = "admin" | "teacher" | "student";
+export type ClassMode = "online" | "offline";
 export type ClassStatus = "upcoming" | "active" | "finished" | "cancelled";
 export type AttendanceStatus = "present" | "absent" | "late" | "excused";
 export type MaterialKind = "pdf" | "document" | "audio" | "video" | "link";
@@ -46,6 +47,11 @@ export interface ClassRow {
   title: string;
   classroom: string | null;
   schedule: string | null;
+  mode: ClassMode;
+  /** the calendar date the class begins, e.g. "2026-01-10" */
+  start_date: string | null;
+  /** the time of day sessions meet, e.g. "18:00:00" */
+  start_time: string | null;
   status: ClassStatus;
   online_meeting_url: string | null;
   capacity: number | null;
