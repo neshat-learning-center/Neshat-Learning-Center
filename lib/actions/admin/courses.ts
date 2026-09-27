@@ -33,13 +33,20 @@ function readCourseFields(formData: FormData) {
   };
 }
 
-async function syncCourseBooks(courseId: string, formData: FormData) {
+/** Returns an error message on failure instead of swallowing it — a silent
+ * failure here used to look identical to "no books were ever selected". */
+async function syncCourseBooks(courseId: string, formData: FormData): Promise<string | null> {
   const supabase = await createClient();
   const bookIds = formData.getAll("book_ids").map(String);
-  await supabase.from("course_books").delete().eq("course_id", courseId);
+  const { error: deleteError } = await supabase.from("course_books").delete().eq("course_id", courseId);
+  if (deleteError) return deleteError.message;
   if (bookIds.length > 0) {
-    await supabase.from("course_books").insert(bookIds.map((book_id) => ({ course_id: courseId, book_id })));
+    const { error: insertError } = await supabase
+      .from("course_books")
+      .insert(bookIds.map((book_id) => ({ course_id: courseId, book_id })));
+    if (insertError) return insertError.message;
   }
+  return null;
 }
 
 export async function createCourse(
@@ -50,8 +57,9 @@ export async function createCourse(
   const supabase = await createClient();
   const { data, error } = await supabase.from("courses").insert(readCourseFields(formData)).select("id").single();
   if (error) return { error: error.message };
-  await syncCourseBooks(data.id, formData);
+  const booksError = await syncCourseBooks(data.id, formData);
   revalidatePath(`/${locale}/dashboard/admin/courses`);
+  if (booksError) return { error: booksError };
   redirect(`/${locale}/dashboard/admin/courses/${data.id}/edit`);
 }
 
@@ -65,9 +73,10 @@ export async function updateCourse(
   const fields = readCourseFields(formData);
   const { error } = await supabase.from("courses").update(fields).eq("id", id);
   if (error) return { error: error.message };
-  await syncCourseBooks(id, formData);
+  const booksError = await syncCourseBooks(id, formData);
   revalidatePath(`/${locale}/dashboard/admin/courses`);
   revalidatePath(`/${locale}/courses/${fields.slug}`);
+  if (booksError) return { error: booksError };
   redirect(`/${locale}/dashboard/admin/courses/${id}/edit`);
 }
 
