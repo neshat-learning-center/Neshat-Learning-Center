@@ -158,7 +158,7 @@ export default async function CourseDetail({
                           )}
                           {c.startTime && (
                             <div className="flex items-center justify-between gap-2">
-                              <dt className="text-muted">{dict.courses.startTime}</dt>
+                              <dt className="text-muted">{dict.courses.classTime}</dt>
                               <dd className="font-medium text-ink" dir="ltr">
                                 {formatStartTime(c.startTime)}
                               </dd>

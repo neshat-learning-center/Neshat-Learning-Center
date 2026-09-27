@@ -86,16 +86,16 @@ export function ClassForm({
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.startDate}>
-          <TextInput type="date" name="start_date" dir="ltr" className="text-start" defaultValue={klass?.start_date ?? ""} />
+        <Field label={dict.courses.schedule} note={a.scheduleNote}>
+          <TextInput name="schedule" required defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
         </Field>
-        <Field label={a.startTime}>
-          <TextInput type="time" name="start_time" dir="ltr" className="text-start" defaultValue={klass?.start_time ?? ""} />
+        <Field label={a.classTime}>
+          <TextInput type="time" name="start_time" required dir="ltr" className="text-start" defaultValue={klass?.start_time ?? ""} />
         </Field>
       </div>
 
-      <Field label={dict.courses.schedule} note={a.scheduleNote}>
-        <TextInput name="schedule" defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
+      <Field label={a.startDate}>
+        <TextInput type="date" name="start_date" dir="ltr" className="text-start" defaultValue={klass?.start_date ?? ""} />
       </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
