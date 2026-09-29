@@ -410,6 +410,8 @@ export const en: Dictionary = {
     inPerson: "In person",
     startDate: "Start date (optional)",
     classTime: "Class time",
+    classStartTime: "From",
+    classEndTime: "To",
     scheduleNote: "The recurring days, e.g. \"Sat, Mon, Wed\".",
     schedulePlaceholder: "e.g. Sat, Mon, Wed",
     course: "Course",

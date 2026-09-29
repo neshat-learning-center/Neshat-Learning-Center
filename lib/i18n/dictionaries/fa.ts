@@ -417,6 +417,8 @@ export const fa = {
     inPerson: "حضوری",
     startDate: "تاریخ شروع (اختیاری)",
     classTime: "ساعت کلاس",
+    classStartTime: "از ساعت",
+    classEndTime: "تا ساعت",
     scheduleNote: "الگوی تکرار هفتگی، مثلاً «شنبه، دوشنبه، چهارشنبه».",
     schedulePlaceholder: "مثلاً شنبه، دوشنبه، چهارشنبه",
     course: "دوره",

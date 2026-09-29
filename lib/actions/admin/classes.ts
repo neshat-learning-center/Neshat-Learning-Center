@@ -26,6 +26,7 @@ function readClassFields(formData: FormData) {
     schedule: String(formData.get("schedule") ?? "").trim() || null,
     start_date: String(formData.get("start_date") ?? "").trim() || null,
     start_time: String(formData.get("start_time") ?? "").trim() || null,
+    end_time: String(formData.get("end_time") ?? "").trim() || null,
     status: String(formData.get("status") ?? "upcoming") as ClassStatus,
     capacity: capacity ? Number(capacity) : null,
   };

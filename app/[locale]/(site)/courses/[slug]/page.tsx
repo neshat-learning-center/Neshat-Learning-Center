@@ -57,8 +57,8 @@ const formatStartDate = (isoDate: string, locale: Locale) =>
     year: "numeric",
   });
 
-/** `start_time` comes back as "HH:MM:SS" — just trim the seconds. */
-const formatStartTime = (time: string) => time.slice(0, 5);
+/** `start_time`/`end_time` come back as "HH:MM:SS" — just trim the seconds. */
+const formatTime = (time: string) => time.slice(0, 5);
 
 export default async function CourseDetail({
   params,
@@ -161,7 +161,8 @@ export default async function CourseDetail({
                             <div className="flex items-center justify-between gap-2">
                               <dt className="text-muted">{dict.courses.classTime}</dt>
                               <dd className="font-medium text-ink" dir="ltr">
-                                {formatStartTime(c.startTime)}
+                                {formatTime(c.startTime)}
+                                {c.endTime && ` – ${formatTime(c.endTime)}`}
                               </dd>
                             </div>
                           )}

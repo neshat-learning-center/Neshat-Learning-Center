@@ -50,8 +50,10 @@ export interface ClassRow {
   mode: ClassMode;
   /** the calendar date the class begins, e.g. "2026-01-10" */
   start_date: string | null;
-  /** the time of day sessions meet, e.g. "18:00:00" */
+  /** the time of day a session starts/ends, e.g. "18:00:00" — together the
+   * range (e.g. 16:00–17:30) is "the time of the class" */
   start_time: string | null;
+  end_time: string | null;
   status: ClassStatus;
   online_meeting_url: string | null;
   capacity: number | null;
