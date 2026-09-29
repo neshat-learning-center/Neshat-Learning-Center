@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { HomeworkRow } from "@/lib/supabase/types";
 import { href } from "@/lib/utils";
 import { Field, TextInput, TextArea, SubmitButton } from "@/components/admin/fields";
+import { DatePicker } from "@/components/admin/DatePicker";
 import { FileUploadField } from "@/components/admin/FileUploadField";
 import { ConfirmForm } from "@/components/admin/ConfirmForm";
 import { createHomework, deleteHomework, type HomeworkFormState } from "@/lib/actions/homework";
@@ -73,7 +74,7 @@ export function HomeworkManager({
         </Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={h.dueDate}>
-            <TextInput name="due_date" type="date" dir="ltr" className="text-start" />
+            <DatePicker name="due_date" locale={locale} clearLabel={a.clear} todayLabel={a.today} />
           </Field>
         </div>
         <FileUploadField

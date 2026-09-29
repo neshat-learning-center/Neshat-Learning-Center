@@ -63,7 +63,7 @@ function extractOptions(children: ReactNode): SelectOption[] {
  * works unchanged; a hidden input carries the value for <form action> reads.
  */
 export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  const { name, value, defaultValue, onChange, required, disabled, className, children } = props;
+  const { name, value, defaultValue, onChange, required, disabled, className, dir, children } = props;
   const options = useMemo(() => extractOptions(children), [children]);
   const isControlled = value !== undefined;
   const [internal, setInternal] = useState(String(defaultValue ?? ""));
@@ -141,6 +141,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
       <button
         ref={buttonRef}
         type="button"
+        dir={dir}
         disabled={disabled}
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={onKeyDown}
@@ -164,6 +165,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
         <ul
           ref={listRef}
           role="listbox"
+          dir={dir}
           className="dropdown-scroll absolute z-30 mt-2 max-h-64 w-full overflow-y-auto rounded-md border border-line-strong bg-paper p-1.5 shadow-lg"
         >
           {options.map((o, i) => (
@@ -200,6 +202,55 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
         </ul>
       )}
     </div>
+  );
+}
+
+/** Every "HH:MM" on a `step`-minute grid across the day, in order. */
+function generateTimeOptions(step: number): string[] {
+  const times: string[] = [];
+  for (let mins = 0; mins < 24 * 60; mins += step) {
+    times.push(`${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`);
+  }
+  return times;
+}
+
+/**
+ * A branded replacement for <input type="time"> — the native picker (a
+ * wheel of raw OS chrome) can't be restyled at all. Built on top of Select,
+ * so it gets the same themed panel, keyboard nav, and closes-on-pick fix for
+ * free. A class's exact saved time (e.g. one entered before this existed)
+ * is always included as an option even if it falls off the `step` grid.
+ */
+export function TimeSelect({
+  name,
+  defaultValue,
+  required,
+  step = 15,
+  placeholder = "—",
+}: {
+  name: string;
+  defaultValue?: string | null;
+  required?: boolean;
+  step?: number;
+  placeholder?: string;
+}) {
+  const value = defaultValue ? defaultValue.slice(0, 5) : "";
+  const times = useMemo(() => {
+    const base = generateTimeOptions(step);
+    return value && !base.includes(value) ? [...base, value].sort() : base;
+  }, [step, value]);
+
+  return (
+    <Select name={name} required={required} defaultValue={value} className="text-start" dir="ltr">
+      <option value="" disabled>
+        {placeholder}
+      </option>
+      {times.map((t) => (
+        <option key={t} value={t}>
+          {t}
+        </option>
+      ))}
+    </Select>
   );
 }
 

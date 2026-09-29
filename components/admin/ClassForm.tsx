@@ -4,7 +4,8 @@ import { useActionState, useState } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { ClassMode, ClassRow } from "@/lib/supabase/types";
-import { Field, TextInput, Select, SubmitButton } from "@/components/admin/fields";
+import { Field, TextInput, Select, TimeSelect, SubmitButton } from "@/components/admin/fields";
+import { DatePicker } from "@/components/admin/DatePicker";
 import { createClass, updateClass, type AdminFormState } from "@/lib/actions/admin/classes";
 
 export function ClassForm({
@@ -90,16 +91,22 @@ export function ClassForm({
         <span className="text-sm font-medium text-ink">{a.classTime}</span>
         <div className="mt-2 grid gap-6 sm:grid-cols-2">
           <Field label={a.classStartTime}>
-            <TextInput type="time" name="start_time" required dir="ltr" className="text-start" defaultValue={klass?.start_time ?? ""} />
+            <TimeSelect name="start_time" required defaultValue={klass?.start_time} />
           </Field>
           <Field label={a.classEndTime}>
-            <TextInput type="time" name="end_time" required dir="ltr" className="text-start" defaultValue={klass?.end_time ?? ""} />
+            <TimeSelect name="end_time" required defaultValue={klass?.end_time} />
           </Field>
         </div>
       </div>
 
       <Field label={a.startDate}>
-        <TextInput type="date" name="start_date" dir="ltr" className="text-start" defaultValue={klass?.start_date ?? ""} />
+        <DatePicker
+          name="start_date"
+          locale={locale}
+          defaultValue={klass?.start_date}
+          clearLabel={a.clear}
+          todayLabel={a.today}
+        />
       </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">

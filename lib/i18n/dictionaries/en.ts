@@ -376,6 +376,8 @@ export const en: Dictionary = {
     saving: "Saving…",
     cancel: "Cancel",
     back: "Back",
+    clear: "Clear",
+    today: "Today",
     confirmDelete: "Are you sure you want to delete this? This can't be undone.",
     createdEmpty: "Nothing added yet.",
     titleFa: "Title (Persian)",
