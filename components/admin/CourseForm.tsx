@@ -119,8 +119,15 @@ export function CourseForm({
         <Field label={a.price}>
           <TextInput name="price" type="number" min={0} dir="ltr" className="text-start" defaultValue={course?.price ?? ""} />
         </Field>
-        <Field label={a.duration}>
-          <TextInput name="duration" dir="ltr" className="text-start" defaultValue={course?.duration ?? ""} />
+        <Field label={a.sessionsCount}>
+          <TextInput
+            name="sessions_count"
+            type="number"
+            min={0}
+            dir="ltr"
+            className="text-start"
+            defaultValue={course?.sessions_count ?? ""}
+          />
         </Field>
       </div>
 

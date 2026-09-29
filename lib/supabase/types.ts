@@ -36,7 +36,7 @@ export interface CourseRow {
   cover_url: string | null;
   summary: Localized | null;
   price: number | null;
-  duration: string | null;
+  sessions_count: number | null;
   created_at: string;
 }
 

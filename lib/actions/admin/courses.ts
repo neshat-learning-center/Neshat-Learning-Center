@@ -12,6 +12,7 @@ function readCourseFields(formData: FormData) {
   const title_fa = String(formData.get("title_fa") ?? "").trim();
   const title_en = String(formData.get("title_en") ?? "").trim();
   const price = String(formData.get("price") ?? "").trim();
+  const sessionsCount = String(formData.get("sessions_count") ?? "").trim();
 
   return {
     slug: String(formData.get("slug") ?? "").trim() || slugify(title_en || title_fa),
@@ -29,7 +30,7 @@ function readCourseFields(formData: FormData) {
       en: String(formData.get("summary_en") ?? "").trim(),
     },
     price: price ? Number(price) : null,
-    duration: String(formData.get("duration") ?? "").trim() || null,
+    sessions_count: sessionsCount ? Number(sessionsCount) : null,
   };
 }
 

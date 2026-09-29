@@ -61,7 +61,7 @@ function mapCourse(row: CourseRow & CourseBooksRel): Course {
     bookSlugs: bookSlugsFromRow(row),
     summary: row.summary ?? { fa: "", en: "" },
     price: row.price ?? undefined,
-    duration: row.duration ?? undefined,
+    sessionsCount: row.sessions_count ?? undefined,
   };
 }
 

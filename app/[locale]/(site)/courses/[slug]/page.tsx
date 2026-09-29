@@ -93,7 +93,9 @@ export default async function CourseDetail({
     { label: dict.courses.category, value: categoryLabel(course.category, l) },
     { label: dict.courses.level, value: pick(course.level, l) },
     { label: dict.courses.age, value: ageLabel(course.age, l) },
-    ...(course.duration ? [{ label: dict.courses.duration, value: course.duration }] : []),
+    ...(course.sessionsCount != null
+      ? [{ label: dict.courses.sessionsCount, value: `${course.sessionsCount.toLocaleString(l === "fa" ? "fa-IR" : "en-US")} ${dict.courses.sessions}` }]
+      : []),
     ...(course.price != null
       ? [{ label: dict.courses.price, value: formatPrice(course.price, l, dict.courses.toman) }]
       : []),

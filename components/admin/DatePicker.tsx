@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/lib/i18n/config";
+import { toJalali, toGregorian, JALALI_MONTH_NAMES_FA, toPersianDigits } from "@/lib/jalali";
 
 const base =
   "w-full rounded-md border border-line-strong bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-accent";
@@ -26,10 +27,11 @@ function sameDay(a: Date, b: Date) {
  * A branded replacement for <input type="date"> — the native calendar
  * popup is OS chrome with zero CSS surface. Still stores/submits a plain
  * Gregorian "YYYY-MM-DD" (same as the native input, and what the DB column
- * expects); only the presentation is custom, with month/day labels shown in
- * the active locale. The public site's own Persian-calendar formatting of
- * this same value elsewhere is unaffected — that's a display step, not
- * something this input needs to replicate.
+ * expects) — only the presentation changes. For the Persian locale that
+ * presentation is a genuine Jalali (Iranian/Shamsi) calendar — correct
+ * month lengths and all, not just Gregorian months with Persian labels —
+ * since that's the calendar admins actually think in. English keeps the
+ * familiar Gregorian grid.
  */
 export function DatePicker({
   name,
@@ -48,6 +50,7 @@ export function DatePicker({
   clearLabel?: string;
   todayLabel?: string;
 }) {
+  const isFa = locale === "fa";
   const initial = defaultValue ? parseISODate(defaultValue) : null;
   const [value, setValue] = useState<Date | null>(initial);
   const [viewDate, setViewDate] = useState<Date>(initial ?? new Date());
@@ -63,14 +66,7 @@ export function DatePicker({
     return () => document.removeEventListener("mousedown", onDocMouseDown);
   }, [open]);
 
-  // Gregorian structure throughout (same as the native input) — only the
-  // month/weekday/day labels are localized, via ICU's Persian-numeral
-  // formatting for fa, forced onto the Gregorian calendar so no separate
-  // Jalali date-math is needed.
-  const fmtLocale = locale === "fa" ? "fa-IR-u-ca-gregory" : "en-US";
-  const weekStartsOn = locale === "fa" ? 6 : 0; // Saturday for fa, Sunday for en
-
-  const monthFormatter = useMemo(() => new Intl.DateTimeFormat(fmtLocale, { month: "long", year: "numeric" }), [fmtLocale]);
+  const fmtLocale = isFa ? "fa-IR" : "en-US";
   const weekdayFormatter = useMemo(() => new Intl.DateTimeFormat(fmtLocale, { weekday: "narrow" }), [fmtLocale]);
   const dayFormatter = useMemo(() => new Intl.DateTimeFormat(fmtLocale, { day: "numeric" }), [fmtLocale]);
   const fullFormatter = useMemo(
@@ -79,26 +75,76 @@ export function DatePicker({
   );
 
   const weekdayLabels = useMemo(() => {
+    const weekStartsOn = isFa ? 6 : 0; // Saturday for fa, Sunday for en — day-of-week naming is calendar-agnostic
     const sunday = new Date(2023, 0, 1); // a known Sunday
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(sunday);
       d.setDate(sunday.getDate() + ((i + weekStartsOn) % 7));
       return weekdayFormatter.format(d);
     });
-  }, [weekdayFormatter, weekStartsOn]);
+  }, [weekdayFormatter, isFa]);
+
+  const monthLabel = useMemo(() => {
+    if (!isFa) return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(viewDate);
+    const { jy, jm } = toJalali(viewDate);
+    return `${JALALI_MONTH_NAMES_FA[jm - 1]} ${toPersianDigits(jy)}`;
+  }, [viewDate, isFa]);
 
   const gridDays = useMemo(() => {
+    if (isFa) {
+      const { jy, jm } = toJalali(viewDate);
+      const monthStart = toGregorian(jy, jm, 1);
+      const startOffset = (monthStart.getDay() - 6 + 7) % 7; // grid starts Saturday
+      const gridStart = new Date(monthStart);
+      gridStart.setDate(gridStart.getDate() - startOffset);
+      return Array.from({ length: 42 }, (_, i) => {
+        const d = new Date(gridStart);
+        d.setDate(gridStart.getDate() + i);
+        return d;
+      });
+    }
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
     const firstOfMonth = new Date(year, month, 1);
-    const startOffset = (firstOfMonth.getDay() - weekStartsOn + 7) % 7;
+    const startOffset = firstOfMonth.getDay(); // grid starts Sunday
     const gridStart = new Date(year, month, 1 - startOffset);
     return Array.from({ length: 42 }, (_, i) => {
       const d = new Date(gridStart);
       d.setDate(gridStart.getDate() + i);
       return d;
     });
-  }, [viewDate, weekStartsOn]);
+  }, [viewDate, isFa]);
+
+  function isInViewMonth(d: Date) {
+    if (isFa) {
+      const cell = toJalali(d);
+      const view = toJalali(viewDate);
+      return cell.jy === view.jy && cell.jm === view.jm;
+    }
+    return d.getMonth() === viewDate.getMonth();
+  }
+
+  function dayLabel(d: Date) {
+    return isFa ? toPersianDigits(toJalali(d).jd) : dayFormatter.format(d);
+  }
+
+  function goToPrevMonth() {
+    if (isFa) {
+      const { jy, jm } = toJalali(viewDate);
+      setViewDate(jm === 1 ? toGregorian(jy - 1, 12, 1) : toGregorian(jy, jm - 1, 1));
+    } else {
+      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+    }
+  }
+
+  function goToNextMonth() {
+    if (isFa) {
+      const { jy, jm } = toJalali(viewDate);
+      setViewDate(jm === 12 ? toGregorian(jy + 1, 1, 1) : toGregorian(jy, jm + 1, 1));
+    } else {
+      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+    }
+  }
 
   function commit(d: Date | null) {
     setValue(d);
@@ -126,24 +172,24 @@ export function DatePicker({
       </button>
 
       {open && (
-        <div dir="ltr" className="absolute z-30 mt-2 w-72 rounded-md border border-line-strong bg-paper p-4 shadow-lg">
+        <div dir={isFa ? "rtl" : "ltr"} className="absolute z-30 mt-2 w-72 rounded-md border border-line-strong bg-paper p-4 shadow-lg">
           <div className="flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}
+              onClick={goToPrevMonth}
               className="flex h-7 w-7 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-sand hover:text-ink"
               aria-label="previous month"
             >
-              ‹
+              {isFa ? "›" : "‹"}
             </button>
-            <span className="text-sm font-semibold text-ink">{monthFormatter.format(viewDate)}</span>
+            <span className="text-sm font-semibold text-ink">{monthLabel}</span>
             <button
               type="button"
-              onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
+              onClick={goToNextMonth}
               className="flex h-7 w-7 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-sand hover:text-ink"
               aria-label="next month"
             >
-              ›
+              {isFa ? "‹" : "›"}
             </button>
           </div>
 
@@ -155,7 +201,7 @@ export function DatePicker({
 
           <div className="mt-1 grid grid-cols-7 gap-y-1">
             {gridDays.map((d, i) => {
-              const inMonth = d.getMonth() === viewDate.getMonth();
+              const inMonth = isInViewMonth(d);
               const isSelected = value && sameDay(d, value);
               const isToday = sameDay(d, today);
               return (
@@ -173,7 +219,7 @@ export function DatePicker({
                           : "text-muted/40 hover:bg-sand"
                   }`}
                 >
-                  {dayFormatter.format(d)}
+                  {dayLabel(d)}
                 </button>
               );
             })}

@@ -76,8 +76,8 @@ export interface Course {
   summary: Localized;
   /** in Toman — omitted from public display entirely when not set */
   price?: number;
-  /** free text, e.g. "8 weeks" / "40 hours" — admin's own wording */
-  duration?: string;
+  /** how many sessions the course runs for */
+  sessionsCount?: number;
 }
 
 export interface Teacher {
