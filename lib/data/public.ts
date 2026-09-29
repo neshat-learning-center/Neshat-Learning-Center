@@ -60,6 +60,8 @@ function mapCourse(row: CourseRow & CourseBooksRel): Course {
     image: row.cover_url ?? undefined,
     bookSlugs: bookSlugsFromRow(row),
     summary: row.summary ?? { fa: "", en: "" },
+    price: row.price ?? undefined,
+    duration: row.duration ?? undefined,
   };
 }
 

@@ -33,6 +33,9 @@ export function CourseGrid({
   const badgeLabel = (course: Course) =>
     course.category !== "general" ? categoryLabel(course.category, locale) : languageLabel(course.language, locale);
 
+  const formatPrice = (price: number) =>
+    `${price.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")} ${dict.courses.toman}`;
+
   const filters: Filter[] = [
     { key: "all", label: dict.courses.filtersAll, kind: "all" },
     ...categories.map((c): Filter => ({ key: c.slug, label: pick(c.title, locale), kind: "category", filter: c.filter })),
@@ -126,6 +129,14 @@ export function CourseGrid({
                       <div>
                         <dt className="text-xs text-muted">{dict.courses.books}</dt>
                         <dd className="mt-0.5 text-ink">{course.bookSlugs.length}</dd>
+                      </div>
+                    )}
+                    {course.price != null && (
+                      <div>
+                        <dt className="text-xs text-muted">{dict.courses.price}</dt>
+                        <dd className="mt-0.5 font-medium text-ink" dir="ltr">
+                          {formatPrice(course.price)}
+                        </dd>
                       </div>
                     )}
                   </dl>

@@ -93,6 +93,9 @@ export const en: Dictionary = {
     picture: "Cover picture",
     classroom: "Location",
     startDate: "Start date",
+    price: "Price",
+    duration: "Duration",
+    toman: "Toman",
     classTime: "Class time",
   },
   teachers: {

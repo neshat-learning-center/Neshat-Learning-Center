@@ -60,6 +60,9 @@ const formatStartDate = (isoDate: string, locale: Locale) =>
 /** `start_time`/`end_time` come back as "HH:MM:SS" — just trim the seconds. */
 const formatTime = (time: string) => time.slice(0, 5);
 
+const formatPrice = (price: number, locale: Locale, tomanLabel: string) =>
+  `${price.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")} ${tomanLabel}`;
+
 export default async function CourseDetail({
   params,
 }: {
@@ -90,6 +93,10 @@ export default async function CourseDetail({
     { label: dict.courses.category, value: categoryLabel(course.category, l) },
     { label: dict.courses.level, value: pick(course.level, l) },
     { label: dict.courses.age, value: ageLabel(course.age, l) },
+    ...(course.duration ? [{ label: dict.courses.duration, value: course.duration }] : []),
+    ...(course.price != null
+      ? [{ label: dict.courses.price, value: formatPrice(course.price, l, dict.courses.toman) }]
+      : []),
   ];
 
   return (

@@ -74,6 +74,10 @@ export interface Course {
   /** recommended books' slugs — a course can have more than one */
   bookSlugs?: string[];
   summary: Localized;
+  /** in Toman — omitted from public display entirely when not set */
+  price?: number;
+  /** free text, e.g. "8 weeks" / "40 hours" — admin's own wording */
+  duration?: string;
 }
 
 export interface Teacher {

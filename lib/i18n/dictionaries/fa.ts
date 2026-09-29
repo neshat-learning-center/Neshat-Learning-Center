@@ -94,6 +94,9 @@ export const fa = {
     picture: "تصویر جلد",
     classroom: "مکان برگزاری",
     startDate: "تاریخ شروع",
+    price: "قیمت",
+    duration: "مدت دوره",
+    toman: "تومان",
     classTime: "ساعت کلاس",
   },
   teachers: {
