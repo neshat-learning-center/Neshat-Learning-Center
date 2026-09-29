@@ -19,10 +19,10 @@ function readClassFields(formData: FormData) {
     course_id: course_id || null,
     teacher_id: teacher_id || null,
     mode,
-    // only the field matching the chosen mode is meaningful — the form only
-    // ever shows one of the two, so drop whatever the other one held before
-    classroom: mode === "offline" ? String(formData.get("classroom") ?? "").trim() || null : null,
-    online_meeting_url: mode === "online" ? String(formData.get("online_meeting_url") ?? "").trim() || null : null,
+    // only the field(s) matching the chosen mode are meaningful — the form
+    // only ever shows the relevant one(s), so drop whatever else held before
+    classroom: mode !== "online" ? String(formData.get("classroom") ?? "").trim() || null : null,
+    online_meeting_url: mode !== "offline" ? String(formData.get("online_meeting_url") ?? "").trim() || null : null,
     schedule: String(formData.get("schedule") ?? "").trim() || null,
     start_date: String(formData.get("start_date") ?? "").trim() || null,
     start_time: String(formData.get("start_time") ?? "").trim() || null,

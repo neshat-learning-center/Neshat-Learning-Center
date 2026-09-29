@@ -2,7 +2,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { pick } from "@/lib/i18n/config";
 import type { SessionCtx } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile, AttendanceStatus } from "@/lib/supabase/types";
+import type { Profile, AttendanceStatus, ClassMode } from "@/lib/supabase/types";
 import { listMaterialsForClasses, resolveMaterialUrl } from "@/lib/data/materials";
 import {
   listHomeworkForStudent,
@@ -52,7 +52,7 @@ export interface StudentData {
     title: string;
     teacher: string;
     schedule: string;
-    mode: "online" | "offline";
+    mode: ClassMode;
     level: string;
     progress: number;
     onlineMeetingUrl?: string;
@@ -65,7 +65,7 @@ export interface StudentData {
 }
 
 export interface TeacherData {
-  classes: { id: string; title: string; students: number; schedule: string; mode: "online" | "offline" }[];
+  classes: { id: string; title: string; students: number; schedule: string; mode: ClassMode }[];
   students: { name: string; klass: string; level: string }[];
   materials: { title: string; kind: string; url: string }[];
   announcements: { title: string; body: string; when: string }[];
@@ -185,7 +185,7 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
           title: String(c.title ?? ""),
           teacher: teacher?.full_name ?? "",
           schedule: String(c.schedule ?? ""),
-          mode: (c.mode as "online" | "offline") ?? "offline",
+          mode: (c.mode as ClassMode) ?? "offline",
           level: String(e.level ?? ""),
           progress: Number(e.progress ?? 0),
           onlineMeetingUrl: (c.online_meeting_url as string) ?? undefined,
@@ -298,7 +298,7 @@ export async function getTeacherData(session: SessionCtx, locale: Locale): Promi
           title: String(c.title ?? ""),
           students: countRow?.count ?? 0,
           schedule: String(c.schedule ?? ""),
-          mode: (c.mode as "online" | "offline") ?? "offline",
+          mode: (c.mode as ClassMode) ?? "offline",
         };
       }) ?? [];
 

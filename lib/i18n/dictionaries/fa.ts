@@ -420,6 +420,7 @@ export const fa = {
     onlineMeetingUrl: "لینک کلاس آنلاین (اختیاری)",
     online: "آنلاین",
     inPerson: "حضوری",
+    bothModes: "حضوری و آنلاین",
     startDate: "تاریخ شروع (اختیاری)",
     classTime: "ساعت کلاس",
     classStartTime: "از ساعت",

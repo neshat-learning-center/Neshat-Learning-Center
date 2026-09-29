@@ -413,6 +413,7 @@ export const en: Dictionary = {
     onlineMeetingUrl: "Online class link (optional)",
     online: "Online",
     inPerson: "In person",
+    bothModes: "In person & online",
     startDate: "Start date (optional)",
     classTime: "Class time",
     classStartTime: "From",

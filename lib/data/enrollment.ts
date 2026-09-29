@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured, isSupabaseConfigured } from "@/lib/supabase/config";
+import type { ClassMode } from "@/lib/supabase/types";
 
 export interface EnrollableClass {
   id: string;
@@ -10,7 +11,7 @@ export interface EnrollableClass {
   endTime: string | null;
   teacherName: string | null;
   classroom: string | null;
-  mode: "online" | "offline";
+  mode: ClassMode;
   /** Only populated once the viewer is enrolled in this specific class —
    * the meeting link isn't public information. */
   onlineMeetingUrl: string | null;

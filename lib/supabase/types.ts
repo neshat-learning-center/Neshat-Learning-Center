@@ -5,7 +5,7 @@ import type { Localized } from "@/lib/i18n/config";
  * Regenerate with `supabase gen types typescript` once the CLI is connected.
  */
 export type Role = "admin" | "teacher" | "student";
-export type ClassMode = "online" | "offline";
+export type ClassMode = "online" | "offline" | "both";
 export type ClassStatus = "upcoming" | "active" | "finished" | "cancelled";
 export type AttendanceStatus = "present" | "absent" | "late" | "excused";
 export type MaterialKind = "pdf" | "document" | "audio" | "video" | "link";

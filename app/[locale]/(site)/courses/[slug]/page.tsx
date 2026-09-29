@@ -147,7 +147,7 @@ export default async function CourseDetail({
                         <div className="flex items-start justify-between gap-3">
                           <span className="text-lg font-bold text-ink">{c.schedule ?? "—"}</span>
                           <span className="shrink-0 rounded-full border border-line-strong bg-canvas px-3 py-1 text-xs text-ink-soft">
-                            {c.mode === "online" ? dict.common.online : dict.common.offline}
+                            {c.mode === "online" ? dict.common.online : c.mode === "both" ? dict.common.both : dict.common.offline}
                           </span>
                         </div>
 

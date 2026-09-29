@@ -65,18 +65,21 @@ export function ClassForm({
         </Field>
       </div>
 
+      <Field label={a.mode}>
+        <Select name="mode" defaultValue={mode} onChange={(e) => setMode(e.target.value as ClassMode)}>
+          <option value="offline">{a.inPerson}</option>
+          <option value="online">{a.online}</option>
+          <option value="both">{a.bothModes}</option>
+        </Select>
+      </Field>
+
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.mode}>
-          <Select name="mode" defaultValue={mode} onChange={(e) => setMode(e.target.value as ClassMode)}>
-            <option value="offline">{a.inPerson}</option>
-            <option value="online">{a.online}</option>
-          </Select>
-        </Field>
-        {mode === "offline" ? (
+        {mode !== "online" && (
           <Field label={a.classroom}>
             <TextInput name="classroom" defaultValue={klass?.classroom ?? ""} />
           </Field>
-        ) : (
+        )}
+        {mode !== "offline" && (
           <Field label={a.onlineMeetingUrl}>
             <TextInput name="online_meeting_url" dir="ltr" className="text-start" defaultValue={klass?.online_meeting_url ?? ""} />
           </Field>

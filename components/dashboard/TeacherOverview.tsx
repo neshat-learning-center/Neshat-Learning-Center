@@ -28,7 +28,7 @@ export function TeacherOverview({
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-lg font-bold text-ink">{c.title}</h3>
                   <span className="shrink-0 rounded-full border border-line-strong px-2.5 py-1 text-xs text-ink-soft">
-                    {c.mode === "online" ? dict.common.online : dict.common.offline}
+                    {c.mode === "online" ? dict.common.online : c.mode === "both" ? dict.common.both : dict.common.offline}
                   </span>
                 </div>
                 <dl className="mt-4 flex items-center gap-6 text-sm">

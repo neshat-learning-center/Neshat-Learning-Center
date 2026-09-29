@@ -25,7 +25,7 @@ export function StudentOverview({ dict, locale, data }: { dict: Dictionary; loca
                     <p className="mt-1 text-sm text-muted">{c.teacher}</p>
                   </div>
                   <span className="shrink-0 rounded-full border border-line-strong px-2.5 py-1 text-xs text-ink-soft">
-                    {c.mode === "online" ? dict.common.online : dict.common.offline}
+                    {c.mode === "online" ? dict.common.online : c.mode === "both" ? dict.common.both : dict.common.offline}
                   </span>
                 </div>
                 <dl className="mt-4 flex items-center gap-6 text-sm">
@@ -45,7 +45,7 @@ export function StudentOverview({ dict, locale, data }: { dict: Dictionary; loca
                   </div>
                   <ProgressBar value={c.progress} />
                 </div>
-                {c.mode === "online" && c.onlineMeetingUrl && (
+                {c.mode !== "offline" && c.onlineMeetingUrl && (
                   <a
                     href={c.onlineMeetingUrl}
                     target="_blank"
