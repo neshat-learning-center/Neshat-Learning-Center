@@ -59,8 +59,8 @@ export default async function TeacherClassPage({
   return (
     <div className="flex max-w-3xl flex-col gap-12">
       <div>
-        <h1 className="text-2xl font-extrabold text-ink">{klass.title}</h1>
-        <p className="mt-1 text-sm text-muted">{klass.schedule}</p>
+        <h1 className="text-2xl font-extrabold text-ink">{l === "fa" ? klass.title : klass.title_en || klass.title}</h1>
+        <p className="mt-1 text-sm text-muted">{l === "fa" ? klass.schedule : klass.schedule_en || klass.schedule}</p>
       </div>
 
       <div>

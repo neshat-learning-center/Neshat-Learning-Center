@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { AttendanceStatus } from "@/lib/supabase/types";
+import type { Locale } from "@/lib/i18n/config";
 
 export interface RosterEntry {
   enrollmentId: string;
@@ -42,10 +43,15 @@ export async function getClassForAttendance(
   classId: string,
   userId: string,
   isAdmin: boolean,
+  locale: Locale,
 ): Promise<{ title: string } | null> {
   const supabase = await createClient();
-  const { data } = await supabase.from("classes").select("title, teacher_id").eq("id", classId).maybeSingle();
+  const { data } = await supabase
+    .from("classes")
+    .select("title, title_en, teacher_id")
+    .eq("id", classId)
+    .maybeSingle();
   if (!data) return null;
   if (!isAdmin && data.teacher_id !== userId) return null;
-  return { title: data.title };
+  return { title: locale === "fa" ? data.title : data.title_en || data.title };
 }

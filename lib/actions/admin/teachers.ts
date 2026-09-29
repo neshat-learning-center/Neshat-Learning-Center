@@ -49,6 +49,7 @@ export async function updateTeacher(
   const supabase = await createClient();
   const update: Record<string, unknown> = {
     full_name: String(formData.get("name") ?? "").trim() || null,
+    full_name_en: String(formData.get("name_en") ?? "").trim() || null,
     phone: String(formData.get("phone") ?? "").trim() || null,
     avatar_url: String(formData.get("avatar_url") ?? "").trim() || null,
     bio: {

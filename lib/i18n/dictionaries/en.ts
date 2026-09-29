@@ -322,6 +322,7 @@ export const en: Dictionary = {
     title: "Profile",
     lead: "Edit your account and public profile information.",
     name: "Full name",
+    nameEn: "Full name in English (optional, teachers only)",
     phone: "Phone number",
     email: "Email",
     avatarUrl: "Profile photo URL",

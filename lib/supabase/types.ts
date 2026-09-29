@@ -15,6 +15,8 @@ export interface Profile {
   role: Role;
   slug: string | null;
   full_name: string | null;
+  /** English name/transliteration — optional, falls back to full_name when blank */
+  full_name_en: string | null;
   avatar_url: string | null;
   phone: string | null;
   bio: Localized | null;
@@ -45,8 +47,14 @@ export interface ClassRow {
   course_id: string | null;
   teacher_id: string | null;
   title: string;
+  /** English rendering of `title` (auto-built alongside it) — optional,
+   * falls back to `title` when blank */
+  title_en: string | null;
   classroom: string | null;
   schedule: string | null;
+  /** English rendering of `schedule`, e.g. "Sat, Mon, Wed" — optional,
+   * falls back to `schedule` when blank */
+  schedule_en: string | null;
   mode: ClassMode;
   /** the calendar date the class begins, e.g. "2026-01-10" */
   start_date: string | null;

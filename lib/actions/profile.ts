@@ -29,6 +29,7 @@ export async function updateProfile(
   };
 
   if (role === "teacher") {
+    update.full_name_en = String(formData.get("name_en") ?? "").trim() || null;
     update.bio = {
       fa: String(formData.get("bio_fa") ?? "").trim(),
       en: String(formData.get("bio_en") ?? "").trim(),

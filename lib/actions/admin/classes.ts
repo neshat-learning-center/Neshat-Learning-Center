@@ -24,6 +24,7 @@ function readClassFields(formData: FormData) {
     classroom: mode !== "online" ? String(formData.get("classroom") ?? "").trim() || null : null,
     online_meeting_url: mode !== "offline" ? String(formData.get("online_meeting_url") ?? "").trim() || null : null,
     schedule: String(formData.get("schedule") ?? "").trim() || null,
+    schedule_en: String(formData.get("schedule_en") ?? "").trim() || null,
     start_date: String(formData.get("start_date") ?? "").trim() || null,
     start_time: String(formData.get("start_time") ?? "").trim() || null,
     end_time: String(formData.get("end_time") ?? "").trim() || null,
@@ -33,21 +34,32 @@ function readClassFields(formData: FormData) {
 }
 
 /** Classes aren't named individually by the admin — a class is just "this
- * course, at this time", so its (still-required, plain-text) `title` column
- * is derived from the course it belongs to plus its schedule, which also
- * tells apart multiple classes of the same course. */
+ * course, at this time", so its (still-required, plain-text) `title`/`title_en`
+ * columns are derived from the course it belongs to plus its schedule, which
+ * also tells apart multiple classes of the same course. Built in both
+ * languages so the dashboard doesn't stay stuck in Persian after switching
+ * the site to English. */
 async function buildClassTitle(
   supabase: Awaited<ReturnType<typeof createClient>>,
   courseId: string | null,
   schedule: string | null,
-): Promise<string> {
-  let courseTitle = "";
+  scheduleEn: string | null,
+): Promise<{ fa: string; en: string }> {
+  let courseTitleFa = "";
+  let courseTitleEn = "";
   if (courseId) {
     const { data } = await supabase.from("courses").select("title").eq("id", courseId).maybeSingle();
-    courseTitle = data?.title?.fa || data?.title?.en || "";
+    courseTitleFa = data?.title?.fa || data?.title?.en || "";
+    courseTitleEn = data?.title?.en || data?.title?.fa || "";
   }
-  if (courseTitle && schedule) return `${courseTitle} — ${schedule}`;
-  return courseTitle || schedule || "کلاس";
+  const scheduleForEn = scheduleEn || schedule;
+  return {
+    fa: courseTitleFa && schedule ? `${courseTitleFa} — ${schedule}` : courseTitleFa || schedule || "کلاس",
+    en:
+      courseTitleEn && scheduleForEn
+        ? `${courseTitleEn} — ${scheduleForEn}`
+        : courseTitleEn || scheduleForEn || "Class",
+  };
 }
 
 export async function createClass(
@@ -57,8 +69,8 @@ export async function createClass(
 ): Promise<AdminFormState> {
   const supabase = await createClient();
   const fields = readClassFields(formData);
-  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule);
-  const { error } = await supabase.from("classes").insert({ ...fields, title });
+  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
+  const { error } = await supabase.from("classes").insert({ ...fields, title: title.fa, title_en: title.en });
   if (error) return { error: error.message };
   const returnTo = String(formData.get("return_to") ?? "").trim();
   if (returnTo) revalidatePath(`/${locale}${returnTo}`);
@@ -74,8 +86,11 @@ export async function updateClass(
 ): Promise<AdminFormState> {
   const supabase = await createClient();
   const fields = readClassFields(formData);
-  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule);
-  const { error } = await supabase.from("classes").update({ ...fields, title }).eq("id", id);
+  const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
+  const { error } = await supabase
+    .from("classes")
+    .update({ ...fields, title: title.fa, title_en: title.en })
+    .eq("id", id);
   if (error) return { error: error.message };
   const returnTo = String(formData.get("return_to") ?? "").trim();
   if (returnTo) revalidatePath(`/${locale}${returnTo}`);

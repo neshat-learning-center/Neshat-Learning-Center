@@ -33,7 +33,7 @@ export default async function AttendancePage({
     );
   }
 
-  const klass = await getClassForAttendance(classId, session.id, session.role === "admin");
+  const klass = await getClassForAttendance(classId, session.id, session.role === "admin", l);
   if (!klass) notFound();
 
   const roster = await getClassRosterForToday(classId);

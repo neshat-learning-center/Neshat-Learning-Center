@@ -77,6 +77,15 @@ export function ProfileForm({
         <>
           <div className="hair" />
           <label className="flex flex-col gap-2">
+            <span className={label}>{p.nameEn}</span>
+            <input
+              name="name_en"
+              dir="ltr"
+              defaultValue={profile.full_name_en ?? ""}
+              className={`${field} text-start`}
+            />
+          </label>
+          <label className="flex flex-col gap-2">
             <span className={label}>{p.slug}</span>
             <input
               name="slug"

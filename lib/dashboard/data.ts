@@ -170,7 +170,9 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
     const supabase = await createClient();
     const { data } = await supabase
       .from("enrollments")
-      .select("id, level, progress, classes(id, title, schedule, mode, online_meeting_url, teacher:profiles(full_name))");
+      .select(
+        "id, level, progress, classes(id, title, title_en, schedule, schedule_en, mode, online_meeting_url, teacher:profiles(full_name, full_name_en))",
+      );
 
     const classes =
       data?.map((e) => {
@@ -178,13 +180,14 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
         const c = ((Array.isArray(rel) ? rel[0] : rel) as Record<string, unknown> | undefined) ?? {};
         const teacherRel = c.teacher as unknown;
         const teacher = (Array.isArray(teacherRel) ? teacherRel[0] : teacherRel) as
-          | { full_name?: string }
+          | { full_name?: string; full_name_en?: string }
           | undefined;
+        const isFa = locale === "fa";
         return {
           id: String(c.id ?? e.id),
-          title: String(c.title ?? ""),
-          teacher: teacher?.full_name ?? "",
-          schedule: String(c.schedule ?? ""),
+          title: String((isFa ? c.title : (c.title_en as string) || c.title) ?? ""),
+          teacher: (isFa ? teacher?.full_name : teacher?.full_name_en || teacher?.full_name) ?? "",
+          schedule: String((isFa ? c.schedule : (c.schedule_en as string) || c.schedule) ?? ""),
           mode: (c.mode as ClassMode) ?? "offline",
           level: String(e.level ?? ""),
           progress: Number(e.progress ?? 0),
@@ -231,7 +234,7 @@ export async function getStudentData(session: SessionCtx, locale: Locale): Promi
       })),
     );
 
-    const scores = await listStudentScores(session.id);
+    const scores = await listStudentScores(session.id, locale);
 
     return { classes, attendance, materials, announcements, homework, scores };
   } catch {
@@ -286,18 +289,19 @@ export async function getTeacherData(session: SessionCtx, locale: Locale): Promi
     const supabase = await createClient();
     const { data } = await supabase
       .from("classes")
-      .select("id, title, schedule, mode, enrollments(count)")
+      .select("id, title, title_en, schedule, schedule_en, mode, enrollments(count)")
       .eq("teacher_id", session.id);
 
+    const isFa = locale === "fa";
     const classes =
       data?.map((c) => {
         const countRel = c.enrollments as unknown;
         const countRow = (Array.isArray(countRel) ? countRel[0] : countRel) as { count?: number } | undefined;
         return {
           id: String(c.id),
-          title: String(c.title ?? ""),
+          title: String((isFa ? c.title : c.title_en || c.title) ?? ""),
           students: countRow?.count ?? 0,
-          schedule: String(c.schedule ?? ""),
+          schedule: String((isFa ? c.schedule : c.schedule_en || c.schedule) ?? ""),
           mode: (c.mode as ClassMode) ?? "offline",
         };
       }) ?? [];
@@ -343,7 +347,7 @@ export async function getTeacherData(session: SessionCtx, locale: Locale): Promi
       dueDate: h.due_date,
     }));
 
-    const scores = await listTeacherScores(session.id);
+    const scores = await listTeacherScores(session.id, locale);
 
     return { classes, students, materials, announcements, homework, scores };
   } catch {

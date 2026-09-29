@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { HomeworkRow, HomeworkSubmissionRow } from "@/lib/supabase/types";
+import type { Locale } from "@/lib/i18n/config";
 
 const SIGNED_URL_TTL = 60 * 60; // 1 hour
 
@@ -109,25 +110,28 @@ export interface ScoreRow {
 }
 
 /** Every graded submission for one student, across all their classes. */
-export async function listStudentScores(studentId: string): Promise<ScoreRow[]> {
+export async function listStudentScores(studentId: string, locale: Locale): Promise<ScoreRow[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("homework_submissions")
-    .select("id, grade, feedback, graded_at, homework:homeworks(title, class:classes(title))")
+    .select("id, grade, feedback, graded_at, homework:homeworks(title, class:classes(title, title_en))")
     .eq("student_id", studentId)
     .not("grade", "is", null)
     .order("graded_at", { ascending: false });
 
+  const isFa = locale === "fa";
   return (
     data?.map((row) => {
       const hwRel = row.homework as unknown;
       const hw = (Array.isArray(hwRel) ? hwRel[0] : hwRel) as { title?: string; class?: unknown } | undefined;
       const classRel = hw?.class;
-      const klass = (Array.isArray(classRel) ? classRel[0] : classRel) as { title?: string } | undefined;
+      const klass = (Array.isArray(classRel) ? classRel[0] : classRel) as
+        | { title?: string; title_en?: string }
+        | undefined;
       return {
         submissionId: row.id,
         homeworkTitle: hw?.title ?? "",
-        classTitle: klass?.title ?? "",
+        classTitle: (isFa ? klass?.title : klass?.title_en || klass?.title) ?? "",
         grade: Number(row.grade),
         feedback: row.feedback,
         gradedAt: row.graded_at,
@@ -137,12 +141,16 @@ export async function listStudentScores(studentId: string): Promise<ScoreRow[]> 
 }
 
 /** Every graded submission a teacher has given, across all their classes. */
-export async function listTeacherScores(teacherId: string): Promise<(ScoreRow & { studentName: string })[]> {
+export async function listTeacherScores(
+  teacherId: string,
+  locale: Locale,
+): Promise<(ScoreRow & { studentName: string })[]> {
   const supabase = await createClient();
-  const { data: classes } = await supabase.from("classes").select("id, title").eq("teacher_id", teacherId);
+  const { data: classes } = await supabase.from("classes").select("id, title, title_en").eq("teacher_id", teacherId);
   const classIds = classes?.map((c) => c.id) ?? [];
   if (classIds.length === 0) return [];
-  const classTitleById = new Map(classes?.map((c) => [c.id, c.title]) ?? []);
+  const isFa = locale === "fa";
+  const classTitleById = new Map(classes?.map((c) => [c.id, isFa ? c.title : c.title_en || c.title]) ?? []);
 
   const { data: homeworks } = await supabase.from("homeworks").select("id, title, class_id").in("class_id", classIds);
   if (!homeworks || homeworks.length === 0) return [];

@@ -86,9 +86,20 @@ export function ClassForm({
         )}
       </div>
 
-      <Field label={dict.courses.schedule} note={a.scheduleNote}>
-        <TextInput name="schedule" required defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
-      </Field>
+      <div className="grid gap-6 sm:grid-cols-2">
+        <Field label={a.scheduleFa} note={a.scheduleNote}>
+          <TextInput name="schedule" required defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
+        </Field>
+        <Field label={a.scheduleEn}>
+          <TextInput
+            name="schedule_en"
+            dir="ltr"
+            className="text-start"
+            defaultValue={klass?.schedule_en ?? ""}
+            placeholder="e.g. Sat, Mon, Wed"
+          />
+        </Field>
+      </div>
 
       <div>
         <span className="text-sm font-medium text-ink">{a.classTime}</span>

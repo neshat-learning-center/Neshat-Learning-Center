@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { ClassMode } from "@/lib/supabase/types";
+import type { Locale } from "@/lib/i18n/config";
 
 export interface EnrollableClass {
   id: string;
@@ -36,13 +37,14 @@ export async function getCourseIdBySlug(slug: string): Promise<string | null> {
 export async function listEnrollableClasses(
   courseId: string,
   studentId: string | null,
+  locale: Locale,
 ): Promise<EnrollableClass[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = await createClient();
   const { data: classes } = await supabase
     .from("classes")
     .select(
-      "id, schedule, start_date, start_time, end_time, classroom, mode, online_meeting_url, capacity, teacher:profiles(full_name)",
+      "id, schedule, schedule_en, start_date, start_time, end_time, classroom, mode, online_meeting_url, capacity, teacher:profiles(full_name, full_name_en)",
     )
     .eq("course_id", courseId)
     .in("status", ["upcoming", "active"]);
@@ -77,16 +79,21 @@ export async function listEnrollableClasses(
 
   return classes.map((c) => {
     const rel = c.teacher as unknown;
-    const teacher = (Array.isArray(rel) ? rel[0] : rel) as { full_name?: string } | undefined;
+    const teacher = (Array.isArray(rel) ? rel[0] : rel) as
+      | { full_name?: string; full_name_en?: string }
+      | undefined;
     const enrolledCount = enrolledCounts.get(c.id) ?? 0;
     const enrolled = enrolledIds.has(c.id);
+    const teacherName =
+      locale === "fa" ? teacher?.full_name ?? null : teacher?.full_name_en || teacher?.full_name || null;
+    const schedule = locale === "fa" ? c.schedule : c.schedule_en || c.schedule;
     return {
       id: c.id,
-      schedule: c.schedule,
+      schedule,
       startDate: c.start_date,
       startTime: c.start_time,
       endTime: c.end_time,
-      teacherName: teacher?.full_name ?? null,
+      teacherName,
       classroom: c.classroom,
       mode: c.mode,
       onlineMeetingUrl: enrolled ? c.online_meeting_url : null,

@@ -68,7 +68,7 @@ function mapCourse(row: CourseRow & CourseBooksRel): Course {
 function mapTeacher(row: Profile): Teacher {
   return {
     slug: row.slug ?? row.id,
-    name: { fa: row.full_name ?? "", en: row.full_name ?? "" },
+    name: { fa: row.full_name ?? "", en: row.full_name_en || row.full_name || "" },
     languages: row.languages ?? { fa: "", en: "" },
     specialty: row.specialty ?? { fa: "", en: "" },
     bio: row.bio ?? { fa: "", en: "" },

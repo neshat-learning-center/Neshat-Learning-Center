@@ -32,10 +32,13 @@ export function TeacherEditForm({
         <Field label={p.name}>
           <TextInput name="name" defaultValue={teacher.full_name ?? ""} />
         </Field>
-        <Field label={p.phone}>
-          <TextInput name="phone" type="tel" dir="ltr" className="text-start" defaultValue={teacher.phone ?? ""} />
+        <Field label={p.nameEn}>
+          <TextInput name="name_en" dir="ltr" className="text-start" defaultValue={teacher.full_name_en ?? ""} />
         </Field>
       </div>
+      <Field label={p.phone}>
+        <TextInput name="phone" type="tel" dir="ltr" className="text-start" defaultValue={teacher.phone ?? ""} />
+      </Field>
       <FileUploadField
         bucket="avatars"
         pathPrefix={teacher.id}

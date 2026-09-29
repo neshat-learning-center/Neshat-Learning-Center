@@ -85,7 +85,7 @@ export default async function CourseDetail({
   const session = await getSession();
   const courseId = await getCourseIdBySlug(course.slug);
   const enrollableClasses = courseId
-    ? await listEnrollableClasses(courseId, session?.role === "student" ? session.id : null)
+    ? await listEnrollableClasses(courseId, session?.role === "student" ? session.id : null, l)
     : [];
 
   const info: Array<{ label: string; value: string }> = [
