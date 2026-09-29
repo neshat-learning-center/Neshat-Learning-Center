@@ -51,9 +51,11 @@ export interface ClassRow {
    * falls back to `title` when blank */
   title_en: string | null;
   classroom: string | null;
+  /** The days the class meets on — the source of truth for the schedule. */
+  schedule_days: string[] | null;
+  /** Persian display text derived from `schedule_days` on save, e.g. "شنبه، دوشنبه" */
   schedule: string | null;
-  /** English rendering of `schedule`, e.g. "Sat, Mon, Wed" — optional,
-   * falls back to `schedule` when blank */
+  /** English display text derived from `schedule_days` on save, e.g. "Sat, Mon" */
   schedule_en: string | null;
   mode: ClassMode;
   /** the calendar date the class begins, e.g. "2026-01-10" */

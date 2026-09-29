@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured } from "@/lib/supabase/config";
 import type { Locale } from "@/lib/i18n/config";
 import type { ClassMode, ClassStatus } from "@/lib/supabase/types";
+import { isWeekday, formatScheduleDays } from "@/lib/schedule";
 
 export type AdminFormState = { error?: string };
 
@@ -15,6 +16,7 @@ function readClassFields(formData: FormData) {
   const teacher_id = String(formData.get("teacher_id") ?? "").trim();
   const capacity = String(formData.get("capacity") ?? "").trim();
   const mode = (String(formData.get("mode") ?? "offline").trim() as ClassMode) || "offline";
+  const schedule_days = formData.getAll("schedule_days").map(String).filter(isWeekday);
   return {
     course_id: course_id || null,
     teacher_id: teacher_id || null,
@@ -23,8 +25,12 @@ function readClassFields(formData: FormData) {
     // only ever shows the relevant one(s), so drop whatever else held before
     classroom: mode !== "online" ? String(formData.get("classroom") ?? "").trim() || null : null,
     online_meeting_url: mode !== "offline" ? String(formData.get("online_meeting_url") ?? "").trim() || null : null,
-    schedule: String(formData.get("schedule") ?? "").trim() || null,
-    schedule_en: String(formData.get("schedule_en") ?? "").trim() || null,
+    // schedule/schedule_en (the display text) are derived from the picked
+    // days below rather than admin-typed, so both languages are always
+    // correct with nothing to translate by hand.
+    schedule_days: schedule_days.length ? schedule_days : null,
+    schedule: formatScheduleDays(schedule_days, "fa") || null,
+    schedule_en: formatScheduleDays(schedule_days, "en") || null,
     start_date: String(formData.get("start_date") ?? "").trim() || null,
     start_time: String(formData.get("start_time") ?? "").trim() || null,
     end_time: String(formData.get("end_time") ?? "").trim() || null,
@@ -67,8 +73,9 @@ export async function createClass(
   _prev: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const supabase = await createClient();
   const fields = readClassFields(formData);
+  if (!fields.schedule_days) return { error: "schedule-days-required" };
+  const supabase = await createClient();
   const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
   const { error } = await supabase.from("classes").insert({ ...fields, title: title.fa, title_en: title.en });
   if (error) return { error: error.message };
@@ -84,8 +91,9 @@ export async function updateClass(
   _prev: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const supabase = await createClient();
   const fields = readClassFields(formData);
+  if (!fields.schedule_days) return { error: "schedule-days-required" };
+  const supabase = await createClient();
   const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
   const { error } = await supabase
     .from("classes")

@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { ClassMode, ClassRow } from "@/lib/supabase/types";
 import { Field, TextInput, Select, TimeSelect, SubmitButton } from "@/components/admin/fields";
 import { DatePicker } from "@/components/admin/DatePicker";
+import { WEEKDAYS, dayLabel } from "@/lib/schedule";
 import { createClass, updateClass, type AdminFormState } from "@/lib/actions/admin/classes";
 
 export function ClassForm({
@@ -86,20 +87,24 @@ export function ClassForm({
         )}
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={a.scheduleFa} note={a.scheduleNote}>
-          <TextInput name="schedule" required defaultValue={klass?.schedule ?? ""} placeholder={a.schedulePlaceholder} />
-        </Field>
-        <Field label={a.scheduleEn}>
-          <TextInput
-            name="schedule_en"
-            dir="ltr"
-            className="text-start"
-            defaultValue={klass?.schedule_en ?? ""}
-            placeholder="e.g. Sat, Mon, Wed"
-          />
-        </Field>
-      </div>
+      <Field label={a.scheduleDays}>
+        <div className="flex flex-wrap gap-2">
+          {WEEKDAYS.map((day) => (
+            <label key={day} className="cursor-pointer">
+              <input
+                type="checkbox"
+                name="schedule_days"
+                value={day}
+                defaultChecked={klass?.schedule_days?.includes(day) ?? false}
+                className="peer sr-only"
+              />
+              <span className="inline-block rounded-full border border-line-strong px-4 py-2 text-sm font-medium text-ink transition-colors peer-checked:border-accent peer-checked:bg-accent peer-checked:text-slate">
+                {dayLabel(day, locale)}
+              </span>
+            </label>
+          ))}
+        </div>
+      </Field>
 
       <div>
         <span className="text-sm font-medium text-ink">{a.classTime}</span>
@@ -137,7 +142,11 @@ export function ClassForm({
         </Field>
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="text-sm text-red-600">
+          {state.error === "schedule-days-required" ? a.scheduleDaysRequired : state.error}
+        </p>
+      )}
       <SubmitButton pending={pending}>{pending ? a.saving : a.save}</SubmitButton>
     </form>
   );
