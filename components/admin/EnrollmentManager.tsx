@@ -47,6 +47,8 @@ export function EnrollmentManager({
               <ConfirmForm
                 action={unenrollStudent.bind(null, locale, classId, e.id)}
                 confirmText={a.confirmDelete}
+                cancelLabel={a.cancel}
+                confirmLabel={a.remove}
               >
                 <button type="submit" className="text-red-600 hover:underline">
                   {a.remove}

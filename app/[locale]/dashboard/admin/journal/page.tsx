@@ -72,7 +72,12 @@ export default async function AdminJournalPage({
                       >
                         {a.edit}
                       </Link>
-                      <ConfirmForm action={deletePost.bind(null, l, p.id)} confirmText={a.confirmDelete}>
+                      <ConfirmForm
+                        action={deletePost.bind(null, l, p.id)}
+                        confirmText={a.confirmDelete}
+                        cancelLabel={a.cancel}
+                        confirmLabel={a.delete}
+                      >
                         <button type="submit" className="text-red-600 hover:underline">
                           {a.delete}
                         </button>

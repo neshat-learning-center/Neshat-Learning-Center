@@ -53,6 +53,7 @@ export default async function EditClassPage({
         title={klass.title}
         deleteAction={deleteClass.bind(null, l, klass.id, undefined)}
         deleteLabel={a.delete}
+        cancelLabel={a.cancel}
         confirmText={a.confirmDelete}
       />
       <div className="mt-8">

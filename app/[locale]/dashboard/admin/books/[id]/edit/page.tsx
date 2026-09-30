@@ -34,6 +34,7 @@ export default async function EditBookPage({
         title={book.title?.fa ?? book.title?.en}
         deleteAction={deleteBook.bind(null, l, book.id)}
         deleteLabel={a.delete}
+        cancelLabel={a.cancel}
         confirmText={a.confirmDelete}
       />
       <div className="mt-8">

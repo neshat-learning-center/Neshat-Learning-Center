@@ -7,17 +7,19 @@ export function EditPageHeader({
   title,
   deleteAction,
   deleteLabel,
+  cancelLabel,
   confirmText,
 }: {
   title: string;
   deleteAction: (formData: FormData) => void | Promise<void>;
   deleteLabel: string;
+  cancelLabel: string;
   confirmText: string;
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <h1 className="text-2xl font-extrabold text-ink">{title}</h1>
-      <ConfirmForm action={deleteAction} confirmText={confirmText}>
+      <ConfirmForm action={deleteAction} confirmText={confirmText} cancelLabel={cancelLabel} confirmLabel={deleteLabel}>
         <button type="submit" className="shrink-0 text-sm font-medium text-red-600 hover:underline">
           {deleteLabel}
         </button>

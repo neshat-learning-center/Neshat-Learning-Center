@@ -66,6 +66,8 @@ export function MaterialsManager({
               <ConfirmForm
                 action={deleteMaterial.bind(null, locale, classId, m.id, m.path)}
                 confirmText={a.confirmDelete}
+                cancelLabel={a.cancel}
+                confirmLabel={a.delete}
               >
                 <button type="submit" className="text-red-600 hover:underline">
                   {a.delete}

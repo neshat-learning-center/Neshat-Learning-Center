@@ -91,7 +91,12 @@ export default async function AdminPlacementPage({
                     </Link>
                   </td>
                   <td className="px-5 py-3">
-                    <ConfirmForm action={deletePlacementAttempt.bind(null, l, attempt.id)} confirmText={a.confirmDelete}>
+                    <ConfirmForm
+                      action={deletePlacementAttempt.bind(null, l, attempt.id)}
+                      confirmText={a.confirmDelete}
+                      cancelLabel={a.cancel}
+                      confirmLabel={a.delete}
+                    >
                       <button type="submit" className="text-red-600 hover:underline">
                         {a.delete}
                       </button>

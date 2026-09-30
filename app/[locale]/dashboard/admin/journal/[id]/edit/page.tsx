@@ -34,6 +34,7 @@ export default async function EditPostPage({
         title={post.title?.fa ?? post.title?.en}
         deleteAction={deletePost.bind(null, l, post.id)}
         deleteLabel={a.delete}
+        cancelLabel={a.cancel}
         confirmText={a.confirmDelete}
       />
       <div className="mt-8">

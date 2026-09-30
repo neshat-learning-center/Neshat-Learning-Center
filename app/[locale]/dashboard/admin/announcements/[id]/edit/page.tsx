@@ -34,6 +34,7 @@ export default async function EditAnnouncementPage({
         title={announcement.title}
         deleteAction={deleteAnnouncement.bind(null, l, announcement.id)}
         deleteLabel={a.delete}
+        cancelLabel={a.cancel}
         confirmText={a.confirmDelete}
       />
       <div className="mt-8">

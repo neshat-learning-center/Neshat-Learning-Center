@@ -66,6 +66,7 @@ export default async function EditCoursePage({
         title={course.title?.fa ?? course.title?.en}
         deleteAction={deleteCourse.bind(null, l, course.id)}
         deleteLabel={a.delete}
+        cancelLabel={a.cancel}
         confirmText={a.confirmDelete}
       />
       <div className="mt-8">
@@ -114,6 +115,8 @@ export default async function EditCoursePage({
                       <ConfirmForm
                         action={deleteClass.bind(null, l, c.id, `/dashboard/admin/courses/${course.id}/edit`)}
                         confirmText={a.confirmDelete}
+                        cancelLabel={a.cancel}
+                        confirmLabel={a.delete}
                       >
                         <button type="submit" className="text-red-600 hover:underline">
                           {a.delete}

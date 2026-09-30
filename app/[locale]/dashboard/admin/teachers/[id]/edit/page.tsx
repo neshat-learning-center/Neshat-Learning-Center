@@ -35,6 +35,7 @@ export default async function EditTeacherPage({
           title={teacher.full_name ?? a.manageTeachers}
           deleteAction={deleteTeacher.bind(null, l, teacher.id)}
           deleteLabel={a.delete}
+          cancelLabel={a.cancel}
           confirmText={a.confirmDelete}
         />
       ) : (

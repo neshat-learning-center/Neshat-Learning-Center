@@ -72,7 +72,12 @@ export default async function AdminBooksPage({
                       >
                         {a.edit}
                       </Link>
-                      <ConfirmForm action={deleteBook.bind(null, l, b.id)} confirmText={a.confirmDelete}>
+                      <ConfirmForm
+                        action={deleteBook.bind(null, l, b.id)}
+                        confirmText={a.confirmDelete}
+                        cancelLabel={a.cancel}
+                        confirmLabel={a.delete}
+                      >
                         <button type="submit" className="text-red-600 hover:underline">
                           {a.delete}
                         </button>

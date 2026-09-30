@@ -82,6 +82,8 @@ export default async function AdminAnnouncementsPage({
                       <ConfirmForm
                         action={deleteAnnouncement.bind(null, l, an.id)}
                         confirmText={a.confirmDelete}
+                        cancelLabel={a.cancel}
+                        confirmLabel={a.delete}
                       >
                         <button type="submit" className="text-red-600 hover:underline">
                           {a.delete}

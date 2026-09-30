@@ -54,6 +54,8 @@ export function HomeworkManager({
                 <ConfirmForm
                   action={deleteHomework.bind(null, locale, classId, item.id, item.file_url)}
                   confirmText={a.confirmDelete}
+                  cancelLabel={a.cancel}
+                  confirmLabel={a.delete}
                 >
                   <button type="submit" className="text-red-600 hover:underline">
                     {a.delete}

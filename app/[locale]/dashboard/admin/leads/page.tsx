@@ -75,7 +75,12 @@ export default async function AdminLeadsPage({
                     </form>
                   </td>
                   <td className="px-5 py-3">
-                    <ConfirmForm action={deleteLead.bind(null, l, lead.id)} confirmText={a.confirmDelete}>
+                    <ConfirmForm
+                      action={deleteLead.bind(null, l, lead.id)}
+                      confirmText={a.confirmDelete}
+                      cancelLabel={a.cancel}
+                      confirmLabel={a.delete}
+                    >
                       <button type="submit" className="text-red-600 hover:underline">
                         {a.delete}
                       </button>

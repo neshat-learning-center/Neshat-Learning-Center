@@ -38,6 +38,7 @@ export default async function EditStudentPage({
           title={student.full_name ?? a.manageStudents}
           deleteAction={deleteStudent.bind(null, l, student.id)}
           deleteLabel={a.delete}
+          cancelLabel={a.cancel}
           confirmText={a.confirmDelete}
         />
       ) : (

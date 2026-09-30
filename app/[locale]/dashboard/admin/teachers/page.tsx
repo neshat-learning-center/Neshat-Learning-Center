@@ -87,6 +87,8 @@ export default async function AdminTeachersPage({
                         <ConfirmForm
                           action={deleteTeacher.bind(null, l, t.id)}
                           confirmText={a.confirmDelete}
+                          cancelLabel={a.cancel}
+                          confirmLabel={a.delete}
                         >
                           <button type="submit" className="text-red-600 hover:underline">
                             {a.delete}
