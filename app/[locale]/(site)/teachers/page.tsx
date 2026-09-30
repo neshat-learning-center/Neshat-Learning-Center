@@ -42,18 +42,27 @@ export default async function TeachersPage({
         lead={dict.pages.teachersLead}
       />
       <section className="section-x py-14 md:py-20">
-        <div className="container-editorial grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4 md:gap-x-6">
+        <div className="container-editorial grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {teachers.map((t, i) => (
-            <Reveal key={t.slug} delay={(i % 4) * 80}>
-              <Link href={href(l, `/teachers/${t.slug}`)} className="group block">
-                <TeacherPortrait teacher={t} locale={l} />
-                <h3 className="mt-4 text-lg font-bold text-ink transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
-                  {pick(t.name, l)}
-                </h3>
-                <p className="mt-1 text-sm text-muted">{pick(t.specialty, l)}</p>
-                <p className="mt-2 border-t border-line pt-2 text-xs text-ink-soft">
-                  {pick(t.languages, l)}
-                </p>
+            <Reveal key={t.slug} delay={(i % 4) * 60}>
+              <Link
+                href={href(l, `/teachers/${t.slug}`)}
+                className="group flex h-full flex-col overflow-hidden rounded-sm border border-line bg-canvas transition-colors duration-300 hover:border-ink/25"
+              >
+                <div className="p-3 pb-0">
+                  <TeacherPortrait teacher={t} locale={l} />
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="text-lg font-bold text-ink transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                    {pick(t.name, l)}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted">{pick(t.specialty, l)}</p>
+                  {pick(t.languages, l) && (
+                    <span className="mt-3 inline-block w-fit rounded-full border border-line-strong px-3 py-1 text-xs text-ink-soft">
+                      {pick(t.languages, l)}
+                    </span>
+                  )}
+                </div>
               </Link>
             </Reveal>
           ))}

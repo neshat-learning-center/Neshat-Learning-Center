@@ -17,7 +17,7 @@ export function BookCover({ book, locale }: { book: Book; locale: Locale }) {
   const sub = light ? "text-slate/60" : "text-canvas/55";
   return (
     <div
-      className="relative aspect-[2/3] w-full overflow-hidden rounded-[3px] shadow-[0_10px_30px_-12px_rgba(38,37,40,0.35)] transition-all duration-500 ease-[var(--ease-out-soft)] group-hover:shadow-[0_26px_50px_-16px_rgba(38,37,40,0.5)]"
+      className="relative aspect-[2/3] w-full overflow-hidden rounded-[2px] shadow-[0_10px_24px_-14px_rgba(38,37,40,0.4)] ring-1 ring-inset ring-black/5 transition-all duration-500 ease-[var(--ease-out-soft)] group-hover:shadow-[0_22px_40px_-16px_rgba(38,37,40,0.5)]"
       style={{ backgroundImage: `linear-gradient(150deg, ${book.spine[0]}, ${book.spine[1]})` }}
     >
       {book.cover ? (
