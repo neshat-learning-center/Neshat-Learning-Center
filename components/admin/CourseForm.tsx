@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { CourseRow } from "@/lib/supabase/types";
 import { LANGUAGES } from "@/content/languages";
 import { COURSE_CATEGORIES } from "@/content/course-categories";
+import { CEFR_LEVELS } from "@/content/cefr";
 import { Field, TextInput, TextArea, Select, MultiSelect, SubmitButton } from "@/components/admin/fields";
 import { FileUploadField } from "@/components/admin/FileUploadField";
 import { createCourse, updateCourse, type AdminFormState } from "@/lib/actions/admin/courses";
@@ -77,6 +78,17 @@ export function CourseForm({
           <TextInput name="level_en" dir="ltr" className="text-start" defaultValue={course?.level?.en ?? ""} />
         </Field>
       </div>
+
+      <Field label={a.levelCode} note={a.levelCodeNote}>
+        <Select name="level_code" dir="ltr" defaultValue={course?.level_code ?? ""}>
+          <option value="">—</option>
+          {CEFR_LEVELS.map((level) => (
+            <option key={level} value={level}>
+              {level}
+            </option>
+          ))}
+        </Select>
+      </Field>
 
       <Field label={a.ageGroup}>
         <Select name="age_group" defaultValue={course?.age_group ?? ""}>

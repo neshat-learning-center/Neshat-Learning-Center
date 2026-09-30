@@ -10,6 +10,7 @@ import type {
   Announcement,
   Enrollment,
   Lead,
+  PlacementAttempt,
 } from "@/lib/supabase/types";
 
 /**
@@ -234,6 +235,21 @@ export async function listLeads(): Promise<Lead[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
   return data ?? [];
+}
+
+export async function listPlacementAttempts(): Promise<PlacementAttempt[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("placement_attempts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return data ?? [];
+}
+
+export async function getPlacementAttemptById(id: string): Promise<PlacementAttempt | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("placement_attempts").select("*").eq("id", id).maybeSingle();
+  return data ?? null;
 }
 
 /** For select dropdowns: id + display name. */

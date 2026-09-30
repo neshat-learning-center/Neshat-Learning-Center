@@ -22,6 +22,7 @@ function navFor(dict: Dictionary): NavItem[] {
     { label: d.journal, route: "/dashboard/admin/journal" },
     { label: d.announcements, route: "/dashboard/admin/announcements" },
     { label: dict.admin.leadsTitle, route: "/dashboard/admin/leads" },
+    { label: dict.admin.placementTitle, route: "/dashboard/admin/placement" },
     { label: d.profile, route: "/dashboard/profile" },
   ];
 }

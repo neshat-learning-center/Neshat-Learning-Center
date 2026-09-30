@@ -34,6 +34,10 @@ export interface CourseRow {
   /** course "type" — general/conversation/ielts/kids/teacher-training */
   category: string;
   level: Localized | null;
+  /** CEFR tag (A1-C2), optional — lets the placement test suggest this
+   * course to test takers at that level. Independent of the free-text
+   * `level` above, which is just display copy. */
+  level_code: string | null;
   age_group: string | null;
   cover_url: string | null;
   summary: Localized | null;
@@ -169,6 +173,29 @@ export interface Lead {
   created_at: string;
 }
 
+export interface PlacementAnswer {
+  questionId: string;
+  selectedIndex: number;
+  correct: boolean;
+}
+
+export interface PlacementAttempt {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  locale: string;
+  /** null until the quiz step is finished — a row can exist from just the
+   * info step alone, so a drop-off is still a usable lead. */
+  score: number | null;
+  total: number | null;
+  level_code: string | null;
+  answers: PlacementAnswer[] | null;
+  student_id: string | null;
+  reviewed: boolean;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -184,6 +211,7 @@ export interface Database {
       books: { Row: BookRow };
       blog_posts: { Row: BlogPostRow };
       leads: { Row: Lead };
+      placement_attempts: { Row: PlacementAttempt };
     };
   };
 }

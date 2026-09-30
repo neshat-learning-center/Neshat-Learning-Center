@@ -7,6 +7,7 @@ import { teachers as seedTeachers } from "@/content/teachers";
 import { books as seedBooks } from "@/content/books";
 import { posts as seedPosts } from "@/content/journal";
 import type { CourseRow, Profile, BookRow, BlogPostRow } from "@/lib/supabase/types";
+import { isCefrLevel, type CefrLevel } from "@/content/cefr";
 
 export { languageLabel, categoryLabel } from "@/lib/labels";
 
@@ -62,6 +63,7 @@ function mapCourse(row: CourseRow & CourseBooksRel): Course {
     summary: row.summary ?? { fa: "", en: "" },
     price: row.price ?? undefined,
     sessionsCount: row.sessions_count ?? undefined,
+    levelCode: row.level_code && isCefrLevel(row.level_code) ? row.level_code : undefined,
   };
 }
 
@@ -127,6 +129,14 @@ export async function getCourses(): Promise<Course[]> {
   } catch {
     return seedCourses;
   }
+}
+
+/** Courses tagged (by the admin, optionally) with this exact CEFR level —
+ * for the placement test's result page. Courses without a level tag never
+ * match, so this can return nothing until courses start getting tagged. */
+export async function getCoursesByLevel(level: CefrLevel): Promise<Course[]> {
+  const all = await getCourses();
+  return all.filter((c) => c.levelCode === level);
 }
 
 export async function getCourseBySlug(slug: string): Promise<Course | undefined> {

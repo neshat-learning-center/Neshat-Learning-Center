@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { PLACEMENT_QUESTIONS, sanitizeQuestions } from "@/content/placementTest";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
-import { LeadForm } from "@/components/forms/LeadForm";
+import { PlacementTest } from "@/components/placement/PlacementTest";
 
 export async function generateMetadata({
   params,
@@ -40,7 +41,7 @@ export default async function PlacementPage({
       <section className="section-x py-14 md:py-20">
         <div className="container-editorial container-editorial-2xl">
           <Reveal>
-            <LeadForm dict={dict} locale={l} kind="placement" showLanguage showLevel />
+            <PlacementTest dict={dict} locale={l} questions={sanitizeQuestions(PLACEMENT_QUESTIONS)} />
           </Reveal>
         </div>
       </section>

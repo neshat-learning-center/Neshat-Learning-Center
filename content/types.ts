@@ -1,4 +1,5 @@
 import type { Localized } from "@/lib/i18n/config";
+import type { CefrLevel } from "./cefr";
 
 /** The real language a course is taught in — a course's "type" (exam prep,
  * conversation, kids, etc.) is tracked separately via CourseCategory, since
@@ -78,6 +79,9 @@ export interface Course {
   price?: number;
   /** how many sessions the course runs for */
   sessionsCount?: number;
+  /** optional CEFR tag, admin-set — used to suggest this course from the
+   * placement test's result page. Independent of the free-text `level`. */
+  levelCode?: CefrLevel;
 }
 
 export interface Teacher {
