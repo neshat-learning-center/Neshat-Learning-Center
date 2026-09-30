@@ -40,7 +40,7 @@ export default async function HomePage({
       <CourseDiscovery dict={dict} locale={l} categories={categories} />
       <WhyNeshat dict={dict} locale={l} />
       <Courses dict={dict} locale={l} courses={courses} categories={categories} />
-      <Teachers dict={dict} locale={l} teachers={teachers} />
+      <Teachers dict={dict} locale={l} teachers={pickRandom(teachers, 4)} />
       <LearningModes dict={dict} locale={l} />
       <Books dict={dict} locale={l} books={pickRandom(books, 6)} />
       <Journal dict={dict} locale={l} posts={posts} />
