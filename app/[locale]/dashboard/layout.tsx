@@ -7,6 +7,7 @@ import { getMyProfile } from "@/lib/dashboard/data";
 import { href } from "@/lib/utils";
 import { Shell } from "@/components/dashboard/Shell";
 import { ProfileShell } from "@/components/dashboard/ProfileShell";
+import { ResponsiveTables } from "@/components/dashboard/ResponsiveTables";
 
 // Private account/admin area — never indexed by search engines.
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -31,6 +32,7 @@ export default async function DashboardLayout({
   if (session.role === "admin") {
     return (
       <Shell dict={dict} locale={l} session={session}>
+        <ResponsiveTables />
         {children}
       </Shell>
     );
@@ -39,6 +41,7 @@ export default async function DashboardLayout({
   const profile = await getMyProfile(session);
   return (
     <ProfileShell dict={dict} locale={l} session={session} profile={profile}>
+      <ResponsiveTables />
       {children}
     </ProfileShell>
   );

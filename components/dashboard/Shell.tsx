@@ -6,6 +6,8 @@ import type { SessionCtx } from "@/lib/auth";
 import { href } from "@/lib/utils";
 import { signOut } from "@/lib/actions/auth";
 import { Logo } from "@/components/ui/Logo";
+import { makeT } from "@/lib/finance/labels";
+import { MobileNav, type NavGroup } from "@/components/dashboard/MobileNav";
 
 type NavItem = { label: string; hash?: string; route?: string };
 
@@ -27,6 +29,25 @@ function navFor(dict: Dictionary): NavItem[] {
   ];
 }
 
+/** Accounting section — admin only, always Toman. */
+function financeNav(locale: Locale): { heading: string; items: NavItem[] } {
+  const t = makeT(locale);
+  const base = "/dashboard/admin/finance";
+  return {
+    heading: t("finance"),
+    items: [
+      { label: t("overview"), route: base },
+      { label: t("salaries"), route: `${base}/salaries` },
+      { label: t("payments"), route: `${base}/payments` },
+      { label: t("books"), route: `${base}/books` },
+      { label: t("expenses"), route: `${base}/expenses` },
+      { label: t("reports"), route: `${base}/reports` },
+      { label: t("transactions"), route: `${base}/transactions` },
+      { label: t("settings"), route: `${base}/settings` },
+    ],
+  };
+}
+
 export function Shell({
   dict,
   locale,
@@ -39,43 +60,62 @@ export function Shell({
   children: ReactNode;
 }) {
   const nav = navFor(dict);
+  const fin = financeNav(locale);
   const roleLabel = dict.dash.roleAdmin;
+  const groups: NavGroup[] = [
+    { items: nav.map((i) => ({ label: i.label, href: href(locale, i.route as string), exact: i.route === "/dashboard" })) },
+    {
+      heading: fin.heading,
+      items: fin.items.map((i) => ({ label: i.label, href: href(locale, i.route as string), exact: i.route === "/dashboard/admin/finance" })),
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-sand/40 lg:grid lg:grid-cols-[16rem_1fr]">
-      {/* sidebar */}
-      <aside className="sticky top-0 z-30 flex h-auto flex-col border-b border-line bg-canvas lg:h-screen lg:border-b-0 lg:border-e lg:border-line">
-        <div className="flex items-center justify-between px-6 py-5">
-          <Link href={href(locale)}>
+    <div className="min-h-screen bg-sand/40 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
+      {/* sidebar (desktop) / top bar + drawer (phone, tablet) */}
+      <aside className="sticky top-0 z-30 border-b border-line bg-canvas lg:flex lg:h-screen lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-e lg:border-line print:hidden">
+        <div className="flex items-center justify-between gap-3 px-5 py-3 lg:px-6 lg:py-5">
+          <Link href={href(locale)} className="shrink-0">
             <Logo locale={locale} />
           </Link>
+          <div className="flex items-center gap-3 lg:hidden">
+            <span className="rounded-full bg-accent-wash px-3 py-1 text-xs font-medium text-accent-deep">{roleLabel}</span>
+            <MobileNav
+              groups={groups}
+              labels={{ open: dict.nav.menu, close: dict.nav.close }}
+              siteHref={href(locale)}
+              siteLabel={dict.dash.viewSite}
+              signOutAction={signOut.bind(null, locale)}
+              signOutLabel={dict.auth.signOut}
+            />
+          </div>
         </div>
-        <div className="px-6">
+        <div className="hidden px-6 lg:block">
           <span className="inline-flex items-center gap-2 rounded-full bg-accent-wash px-3 py-1 text-xs font-medium text-accent-deep">
             {roleLabel}
           </span>
         </div>
 
-        <nav className="no-scrollbar mt-4 flex gap-1 overflow-x-auto px-4 pb-4 lg:mt-6 lg:flex-col lg:overflow-visible lg:px-4">
-          {nav.map((item) =>
-            item.route ? (
-              <Link
-                key={item.route}
-                href={href(locale, item.route)}
-                className="shrink-0 rounded-md px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-sand hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <a
-                key={item.hash}
-                href={item.hash}
-                className="shrink-0 rounded-md px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-sand hover:text-ink"
-              >
-                {item.label}
-              </a>
-            ),
-          )}
+        <nav className="mt-6 hidden flex-col gap-1 px-4 pb-4 lg:flex">
+          {nav.map((item) => (
+            <Link
+              key={item.route}
+              href={href(locale, item.route as string)}
+              className="shrink-0 rounded-md px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-sand hover:text-ink"
+            >
+              {item.label}
+            </Link>
+          ))}
+          <span className="shrink-0 px-3 pb-1 pt-4 text-xs font-medium text-muted">{fin.heading}</span>
+          {fin.items.map((item) => (
+            <Link
+              key={item.route}
+              href={href(locale, item.route as string)}
+              className="shrink-0 rounded-md px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-sand hover:text-ink"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="mt-auto hidden flex-col gap-1 border-t border-line p-4 lg:flex">
@@ -97,14 +137,14 @@ export function Shell({
       </aside>
 
       {/* content */}
-      <div id="top" className="flex flex-col">
+      <div id="top" className="flex min-w-0 flex-col">
         {session.demo && (
           <div className="flex items-center gap-2 bg-slate px-6 py-2.5 text-sm text-canvas">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             {dict.dash.demoBanner}
           </div>
         )}
-        <header className="flex items-center justify-between px-6 py-6 md:px-10">
+        <header className="flex items-center justify-between px-6 py-6 md:px-10 print:hidden">
           <div>
             <p className="text-sm text-muted">{dict.dash.welcome}</p>
             <p className="text-lg font-bold text-ink">{session.name}</p>

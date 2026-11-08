@@ -25,7 +25,7 @@ export function FileUploadField({
   removeLabel = "حذف تصویر",
   storePathOnly = false,
 }: {
-  bucket: "avatars" | "books" | "materials" | "homework";
+  bucket: "avatars" | "books" | "materials" | "homework" | "receipts";
   pathPrefix: string;
   accept?: string;
   label: string;

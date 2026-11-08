@@ -303,3 +303,78 @@ html[lang="en"] body {
     transform: none;
   }
 }
+
+/* =========================================================================
+   Responsive tables (dashboard). Unlayered on purpose: it must beat the
+   Tailwind utility classes (min-w-*, px-*, py-*) already on each table/cell.
+   ≥768px: the normal table. <768px: each row becomes a labelled card, so no
+   column is ever hidden off-screen. Cells get their labels from
+   ResponsiveTables (data-label).
+   ========================================================================= */
+@media (max-width: 767px) {
+  table.rtable,
+  table.rtable tbody,
+  table.rtable tr,
+  table.rtable td {
+    display: block;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  table.rtable thead {
+    display: none;
+  }
+  table.rtable tr {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  table.rtable tr:last-child {
+    border-bottom: 0;
+  }
+  table.rtable td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.3rem 0 !important;
+    text-align: end;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+  table.rtable td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    max-width: 45%;
+    text-align: start;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+  table.rtable td[data-label=""]::before,
+  table.rtable td:not([data-label])::before {
+    content: none;
+  }
+  /* first cell = the row's title */
+  table.rtable td:first-child {
+    padding-bottom: 0.5rem !important;
+    font-weight: 700;
+  }
+  /* forms/menus need the whole card width */
+  table.rtable td[data-full] {
+    display: block;
+    text-align: start;
+    padding-top: 0.6rem !important;
+  }
+  table.rtable td[data-full]::before {
+    display: block;
+    max-width: none;
+    margin-bottom: 0.35rem;
+  }
+  table.rtable td[data-empty],
+  table.rtable td[data-span] {
+    display: none;
+  }
+  table.rtable td[data-span] {
+    display: block;
+    text-align: center;
+  }
+}

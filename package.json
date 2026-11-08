@@ -6,11 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:finance": "tsx scripts/finance-selftest.ts",
+    "test:finance:sql": "node scripts/finance-sql-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.6",
     "@supabase/supabase-js": "^2.115.0",
+    "exceljs": "^4.4.0",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -18,6 +21,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -25,6 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
