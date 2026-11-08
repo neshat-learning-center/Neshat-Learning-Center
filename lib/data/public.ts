@@ -58,7 +58,6 @@ function mapCourse(row: CourseRow & CourseBooksRel): Course {
     category: row.category as CourseCategory,
     level: row.level ?? { fa: "", en: "" },
     age: (row.age_group as Course["age"]) ?? "adults",
-    image: row.cover_url ?? undefined,
     bookSlugs: bookSlugsFromRow(row),
     summary: row.summary ?? { fa: "", en: "" },
     price: row.price ?? undefined,

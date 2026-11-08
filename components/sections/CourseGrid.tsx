@@ -21,12 +21,15 @@ export function CourseGrid({
   courses,
   categories,
   initialFilter = "all",
+  limit,
 }: {
   dict: Dictionary;
   locale: Locale;
   courses: Course[];
   categories: Category[];
   initialFilter?: string;
+  /** cap on cards shown (applied after filtering) — used by the homepage */
+  limit?: number;
 }) {
   const [active, setActive] = useState(initialFilter);
 
@@ -44,7 +47,7 @@ export function CourseGrid({
     { key: "age-adults", label: locale === "fa" ? "بزرگسالان" : "Adults", kind: "age", value: "adults" },
   ];
 
-  const shown = useMemo(() => {
+  const filtered = useMemo(() => {
     const f = filters.find((x) => x.key === active) ?? filters[0];
     if (f.kind === "all") return courses;
     if (f.kind === "age") return courses.filter((c) => c.age === f.value);
@@ -53,6 +56,7 @@ export function CourseGrid({
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, courses]);
+  const shown = limit ? filtered.slice(0, limit) : filtered;
 
   return (
     <>
@@ -81,66 +85,58 @@ export function CourseGrid({
       {shown.length === 0 ? (
         <p className="mt-10 text-muted">{dict.pages.empty}</p>
       ) : (
-        <div className="mt-8 grid gap-px overflow-hidden rounded-sm border border-line bg-line sm:grid-cols-2">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {shown.map((course, i) => (
-            <Reveal key={course.slug} delay={(i % 2) * 80} className="bg-canvas">
+            <Reveal key={course.slug} delay={(i % 2) * 80}>
               <Link
                 href={href(locale, `/courses/${course.slug}`)}
-                className="group relative flex h-full flex-col justify-between gap-8 p-7 transition-colors duration-300 hover:bg-sand/60 md:p-9"
+                className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-line-strong bg-paper p-7 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:border-ink/30 hover:shadow-[0_16px_32px_-20px_rgba(43,42,45,0.35)] md:p-8"
               >
-                {course.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={course.image}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-[0.07] transition-opacity duration-300 group-hover:opacity-[0.1]"
-                  />
-                )}
-                <div className="relative flex items-center justify-between">
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-1 origin-left rtl:origin-right scale-x-0 bg-accent transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-x-100"
+                />
+                <div className="flex items-center justify-between gap-3">
                   <span className="flex items-center gap-2.5 text-sm text-muted">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
                     {pick(course.level, locale)}
                   </span>
-                  <span className="rounded-full border border-line-strong px-3 py-1 text-xs text-ink-soft">
+                  <span className="rounded-full bg-sand px-3 py-1 text-xs text-ink-soft">
                     {badgeLabel(course)}
                   </span>
                 </div>
 
-                <div className="relative">
-                  <h3 className="text-[clamp(1.5rem,2.4vw,2rem)] font-extrabold leading-snug text-ink">
-                    {pick(course.title, locale)}
-                  </h3>
-                  <p className="mt-3 max-w-sm text-base leading-relaxed text-ink-soft">
-                    {pick(course.summary, locale)}
-                  </p>
-                </div>
+                <h3 className="mt-8 text-[clamp(1.5rem,2.4vw,2rem)] font-extrabold leading-snug text-ink">
+                  {pick(course.title, locale)}
+                </h3>
+                <p className="mt-3 line-clamp-2 max-w-md text-base leading-relaxed text-ink-soft">
+                  {pick(course.summary, locale)}
+                </p>
 
-                <div className="relative flex flex-wrap items-end justify-between gap-4 border-t border-line pt-5">
-                  <dl className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+                <div className="mt-8 flex items-end justify-between gap-4 border-t border-line pt-5">
+                  <dl className="flex flex-wrap gap-x-7 gap-y-2 text-sm">
                     <div>
                       <dt className="text-xs text-muted">{dict.courses.age}</dt>
                       <dd className="mt-0.5 text-ink">
-                        {{ kids: dict.common.kids, teens: dict.common.teens, adults: dict.common.adults }[
-                          course.age
-                        ] ?? course.age}
+                        {{ kids: dict.common.kids, teens: dict.common.teens, adults: dict.common.adults }[course.age] ?? course.age}
                       </dd>
                     </div>
-                    {course.bookSlugs && course.bookSlugs.length > 0 && (
+                    {course.sessionsCount != null && (
                       <div>
-                        <dt className="text-xs text-muted">{dict.courses.books}</dt>
-                        <dd className="mt-0.5 text-ink">{course.bookSlugs.length}</dd>
+                        <dt className="text-xs text-muted">{dict.courses.sessionsCount}</dt>
+                        <dd className="mt-0.5 text-ink">
+                          {course.sessionsCount.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")}
+                        </dd>
                       </div>
                     )}
                     {course.price != null && (
                       <div>
                         <dt className="text-xs text-muted">{dict.courses.price}</dt>
-                        <dd className="mt-0.5 font-medium text-ink" dir="ltr">
-                          {formatPrice(course.price)}
-                        </dd>
+                        <dd className="mt-0.5 font-bold text-ink">{formatPrice(course.price)}</dd>
                       </div>
                     )}
                   </dl>
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line-strong text-ink transition-all duration-300 group-hover:border-accent group-hover:bg-accent">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line-strong text-ink transition-all duration-300 group-hover:border-accent group-hover:bg-accent">
                     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" className="rtl:-scale-x-100">
                       <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

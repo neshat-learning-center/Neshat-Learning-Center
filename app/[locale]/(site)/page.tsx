@@ -4,6 +4,10 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 
 import { getCategories, getCourses, getTeachers, getBooks, getPosts } from "@/lib/data/public";
 import { pickRandom } from "@/lib/utils";
+import { pick } from "@/lib/i18n/config";
+import { site } from "@/content/site";
+import { languageLabel } from "@/lib/labels";
+import { ChatBot } from "@/components/chat/ChatBot";
 
 import { Hero } from "@/components/sections/Hero";
 import { CourseDiscovery } from "@/components/sections/CourseDiscovery";
@@ -34,6 +38,36 @@ export default async function HomePage({
     getPosts(),
   ]);
 
+  const knowledge = {
+    locale: l,
+    siteName: pick(site.name, l),
+    city: pick(site.city, l),
+    address: site.address ? pick(site.address, l) : undefined,
+    mapUrl: site.mapUrl,
+    phones: site.phones ?? [],
+    email: site.email,
+    instagram: site.instagram,
+    courses: courses.map((c) => ({
+      slug: c.slug,
+      titleFa: c.title.fa,
+      titleEn: c.title.en,
+      title: pick(c.title, l),
+      level: pick(c.level, l),
+      age: c.age,
+      price: c.price,
+      sessionsCount: c.sessionsCount,
+      languageFa: languageLabel(c.language, "fa"),
+      languageEn: languageLabel(c.language, "en"),
+    })),
+    teachers: teachers.map((t) => ({
+      slug: t.slug,
+      name: pick(t.name, l),
+      languages: pick(t.languages, l),
+      specialty: pick(t.specialty, l),
+    })),
+    bookCount: books.length,
+  };
+
   return (
     <>
       <Hero dict={dict} locale={l} />
@@ -47,6 +81,7 @@ export default async function HomePage({
       <TeacherTraining dict={dict} locale={l} />
       <StudentExperience dict={dict} locale={l} />
       <CallToAction dict={dict} locale={l} />
+      <ChatBot locale={l} knowledge={knowledge} />
     </>
   );
 }

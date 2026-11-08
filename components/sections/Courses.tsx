@@ -31,7 +31,7 @@ export function Courses({
           }
           className="mb-12"
         />
-        <CourseGrid dict={dict} locale={locale} courses={courses} categories={categories} />
+        <CourseGrid dict={dict} locale={locale} courses={courses} categories={categories} limit={4} />
       </div>
     </section>
   );

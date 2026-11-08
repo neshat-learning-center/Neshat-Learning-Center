@@ -25,7 +25,6 @@ function readCourseFields(formData: FormData) {
     },
     level_code: String(formData.get("level_code") ?? "").trim() || null,
     age_group: String(formData.get("age_group") ?? "").trim() || null,
-    cover_url: String(formData.get("cover_url") ?? "").trim() || null,
     summary: {
       fa: String(formData.get("summary_fa") ?? "").trim(),
       en: String(formData.get("summary_en") ?? "").trim(),

@@ -8,7 +8,6 @@ import { LANGUAGES } from "@/content/languages";
 import { COURSE_CATEGORIES } from "@/content/course-categories";
 import { CEFR_LEVELS } from "@/content/cefr";
 import { Field, TextInput, TextArea, Select, MultiSelect, SubmitButton } from "@/components/admin/fields";
-import { FileUploadField } from "@/components/admin/FileUploadField";
 import { createCourse, updateCourse, type AdminFormState } from "@/lib/actions/admin/courses";
 
 const AGE_GROUPS = [
@@ -33,7 +32,6 @@ export function CourseForm({
   const action = course ? updateCourse.bind(null, locale, course.id) : createCourse.bind(null, locale);
   const [state, formAction, pending] = useActionState<AdminFormState, FormData>(action, {});
   const a = dict.admin;
-  const pathPrefix = course?.id ?? "new";
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
@@ -100,20 +98,6 @@ export function CourseForm({
           ))}
         </Select>
       </Field>
-
-      <FileUploadField
-        bucket="books"
-        pathPrefix={`courses/${pathPrefix}/cover`}
-        accept="image/*"
-        hiddenInputName="cover_url"
-        currentUrl={course?.cover_url}
-        previewAsImage
-        label={a.coverImage}
-        chooseLabel={a.chooseFile}
-        changeLabel={a.changeFile}
-        removeLabel={a.removePicture}
-        uploadingLabel={a.uploading}
-      />
 
       {books.length > 0 && (
         <Field label={a.books}>
