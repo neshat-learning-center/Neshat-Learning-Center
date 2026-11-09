@@ -11,6 +11,7 @@ export const fa = {
     teachers: "اساتید",
     books: "کتاب‌ها",
     classes: "کلاس‌ها",
+    events: "رویدادها",
     journal: "مجله",
     about: "دربارهٔ نشاط",
     placement: "تعیین سطح",

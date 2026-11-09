@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { fontFa, fontEn, fontScript } from "@/lib/fonts";
+import { fontFa, fontEn, fontScript, fontDisplay } from "@/lib/fonts";
 import { locales, isLocale, dir, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
@@ -38,7 +38,7 @@ export default async function LocaleLayout({
     <html
       lang={typed}
       dir={dir[typed]}
-      className={`${fontFa.variable} ${fontEn.variable} ${fontScript.variable} h-full antialiased`}
+      className={`${fontFa.variable} ${fontEn.variable} ${fontScript.variable} ${fontDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-canvas text-ink-soft">{children}</body>
     </html>

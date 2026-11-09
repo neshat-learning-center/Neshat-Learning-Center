@@ -1,4 +1,4 @@
-import { Vazirmatn, Inter, Caveat } from "next/font/google";
+import { Vazirmatn, Inter, Caveat, Bricolage_Grotesque } from "next/font/google";
 
 // Persian — high quality, variable, excellent for editorial headlines
 export const fontFa = Vazirmatn({
@@ -22,4 +22,11 @@ export const fontScript = Caveat({
   variable: "--font-script-var",
   display: "swap",
   weight: ["500", "600", "700"],
+});
+
+// English display — a characterful grotesque for large editorial headlines (Events). Body stays Inter.
+export const fontDisplay = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display-var",
+  display: "swap",
 });

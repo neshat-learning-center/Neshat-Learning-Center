@@ -32,6 +32,7 @@ export function Header({ dict, locale }: { dict: Dictionary; locale: Locale }) {
     { label: dict.nav.teachers, path: "/teachers" },
     { label: dict.nav.books, path: "/books" },
     { label: dict.nav.classes, path: "/classes" },
+    { label: dict.nav.events, path: "/events" },
     { label: dict.nav.journal, path: "/journal" },
     { label: dict.nav.about, path: "/about" },
   ];
@@ -95,8 +96,9 @@ export function Header({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
       {/* mobile overlay */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-50 overflow-hidden lg:hidden ${open ? "" : "pointer-events-none"}`}
         aria-hidden={!open}
+        inert={!open}
       >
         <div
           onClick={() => setOpen(false)}
@@ -105,8 +107,8 @@ export function Header({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           }`}
         />
         <div
-          className={`absolute inset-y-0 end-0 flex w-[86%] max-w-sm flex-col bg-canvas px-7 pb-10 pt-6 shadow-2xl transition-transform duration-500 ease-[var(--ease-out-soft)] ${
-            open ? "translate-x-0" : "rtl:-translate-x-full ltr:translate-x-full"
+          className={`absolute inset-y-0 end-0 flex w-[86%] max-w-sm flex-col bg-canvas px-7 pb-10 pt-6 transition-transform duration-500 ease-[var(--ease-out-soft)] ${
+            open ? "translate-x-0 shadow-2xl" : "shadow-none rtl:-translate-x-full ltr:translate-x-full"
           }`}
         >
           <div className="flex items-center justify-between">

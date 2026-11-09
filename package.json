@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "test:finance": "tsx scripts/finance-selftest.ts",
-    "test:finance:sql": "node scripts/finance-sql-test.mjs"
+    "test:finance:sql": "node scripts/finance-sql-test.mjs",
+    "test:events": "tsx scripts/events-selftest.ts",
+    "test:events:sql": "node scripts/events-sql-test.mjs",
+    "test:events:integration": "tsx scripts/events-integration-test.mts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.6",

@@ -8,6 +8,8 @@ import { pick } from "@/lib/i18n/config";
 import { site } from "@/content/site";
 import { languageLabel } from "@/lib/labels";
 import { ChatBot } from "@/components/chat/ChatBot";
+import { EventsTeaser } from "@/components/sections/EventsTeaser";
+import { getEvents } from "@/lib/events/data";
 
 import { Hero } from "@/components/sections/Hero";
 import { CourseDiscovery } from "@/components/sections/CourseDiscovery";
@@ -21,6 +23,9 @@ import { TeacherTraining } from "@/components/sections/TeacherTraining";
 import { StudentExperience } from "@/components/sections/StudentExperience";
 import { CallToAction } from "@/components/sections/CallToAction";
 
+// Events change from the admin at any time and the page shows live seats and countdowns: always read fresh.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage({
   params,
 }: {
@@ -31,11 +36,12 @@ export default async function HomePage({
   const l = locale as Locale;
   const dict = getDictionary(l);
   const categories = getCategories();
-  const [courses, teachers, books, posts] = await Promise.all([
+  const [courses, teachers, books, posts, events] = await Promise.all([
     getCourses(),
     getTeachers(),
     getBooks(),
     getPosts(),
+    getEvents(),
   ]);
 
   const knowledge = {
@@ -76,6 +82,7 @@ export default async function HomePage({
       <Courses dict={dict} locale={l} courses={courses} categories={categories} />
       <Teachers dict={dict} locale={l} teachers={pickRandom(teachers, 4)} />
       <LearningModes dict={dict} locale={l} />
+      <EventsTeaser events={events} locale={l} />
       <Books dict={dict} locale={l} books={pickRandom(books, 6)} />
       <Journal dict={dict} locale={l} posts={posts} />
       <TeacherTraining dict={dict} locale={l} />

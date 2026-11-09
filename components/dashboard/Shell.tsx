@@ -7,12 +7,13 @@ import { href } from "@/lib/utils";
 import { signOut } from "@/lib/actions/auth";
 import { Logo } from "@/components/ui/Logo";
 import { makeT } from "@/lib/finance/labels";
+import { makeET } from "@/lib/events/labels";
 import { MobileNav, type NavGroup } from "@/components/dashboard/MobileNav";
 
 type NavItem = { label: string; hash?: string; route?: string };
 
 /** Admin-only nav — students/teachers use ProfileShell instead. */
-function navFor(dict: Dictionary): NavItem[] {
+function navFor(dict: Dictionary, locale: Locale): NavItem[] {
   const d = dict.dash;
   return [
     { label: d.overview, route: "/dashboard" },
@@ -23,6 +24,7 @@ function navFor(dict: Dictionary): NavItem[] {
     { label: d.books, route: "/dashboard/admin/books" },
     { label: d.journal, route: "/dashboard/admin/journal" },
     { label: d.announcements, route: "/dashboard/admin/announcements" },
+    { label: makeET(locale)("a_events"), route: "/dashboard/admin/events" },
     { label: dict.admin.leadsTitle, route: "/dashboard/admin/leads" },
     { label: dict.admin.placementTitle, route: "/dashboard/admin/placement" },
     { label: d.profile, route: "/dashboard/profile" },
@@ -59,7 +61,7 @@ export function Shell({
   session: SessionCtx;
   children: ReactNode;
 }) {
-  const nav = navFor(dict);
+  const nav = navFor(dict, locale);
   const fin = financeNav(locale);
   const roleLabel = dict.dash.roleAdmin;
   const groups: NavGroup[] = [

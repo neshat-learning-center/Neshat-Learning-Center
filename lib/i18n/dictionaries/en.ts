@@ -12,6 +12,7 @@ export const en: Dictionary = {
     teachers: "Teachers",
     books: "Books",
     classes: "Classes",
+    events: "Events",
     journal: "Journal",
     about: "About",
     placement: "Placement Test",
