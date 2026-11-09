@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { fontFa, fontEn, fontScript, fontDisplay } from "@/lib/fonts";
 import { locales, isLocale, dir, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
@@ -38,8 +37,13 @@ export default async function LocaleLayout({
     <html
       lang={typed}
       dir={dir[typed]}
-      className={`${fontFa.variable} ${fontEn.variable} ${fontScript.variable} ${fontDisplay.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
+      {/* the two fonts every page needs, fetched early (self-hosted, same origin) */}
+      <head>
+        <link rel="preload" href="/fonts/vazirmatn-arabic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full bg-canvas text-ink-soft">{children}</body>
     </html>
   );

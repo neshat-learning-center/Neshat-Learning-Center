@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css"; /* self-hosted fonts — see scripts/fetch-fonts.mjs */
 
 /* =========================================================================
    NESHAT — design tokens
@@ -28,7 +29,7 @@
   --color-slate: #2b2a2d;
   --color-slate-soft: #3a383c;
 
-  /* fonts (bound in layout via next/font variables) */
+  /* fonts (self-hosted via app/fonts.css, which defines the --font-*-var families) */
   --font-fa: var(--font-fa-var), "Vazirmatn", system-ui, sans-serif;
   --font-en: var(--font-en-var), "Inter", system-ui, sans-serif;
   --font-script: var(--font-script-var), cursive; /* small editorial captions only */

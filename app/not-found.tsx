@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { fontFa, fontEn } from "@/lib/fonts";
 import "./globals.css";
 
 /**
@@ -12,7 +11,7 @@ import "./globals.css";
  */
 export default function RootNotFound() {
   return (
-    <html lang="fa" dir="rtl" className={`${fontFa.variable} ${fontEn.variable} h-full antialiased`}>
+    <html lang="fa" dir="rtl" className="h-full antialiased">
       <body className="flex min-h-full flex-col items-center justify-center bg-canvas px-6 text-center">
         <p className="numeral text-[clamp(4rem,14vw,9rem)] font-extrabold leading-none text-ink/10">404</p>
         <h1 className="mt-4 text-[clamp(1.9rem,4vw,3.2rem)] font-extrabold leading-[1.2] text-ink">
