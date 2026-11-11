@@ -58,6 +58,8 @@ export interface Category {
   title: Localized;
   /** short editorial descriptor, not marketing fluff */
   note: Localized;
+  /** one-line invitation shown with the item's illustration in the discovery section */
+  tagline: Localized;
   /** decorative English/native glyph shown large in the tile */
   glyph: string;
   image?: string; // real photography path — placeholder used when absent

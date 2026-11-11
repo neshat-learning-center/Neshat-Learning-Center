@@ -3,39 +3,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { href } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
-
-/** Quiet editorial representation of the portal — a schedule sketch, not a product screenshot. */
-function PortalSketch({ label }: { label: string }) {
-  const cells = Array.from({ length: 20 });
-  const accent = new Set([6, 13]);
-  return (
-    <div className="rounded-md border border-line bg-canvas p-6 shadow-[0_20px_50px_-30px_rgba(38,37,40,0.4)]">
-      <div className="flex items-center justify-between border-b border-line pb-4">
-        <span className="text-sm font-semibold text-ink">{label}</span>
-        <span className="flex gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-line-strong" />
-          <span className="h-1.5 w-1.5 rounded-full bg-line-strong" />
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-        </span>
-      </div>
-      <div className="mt-4 grid grid-cols-5 gap-1.5">
-        {cells.map((_, i) => (
-          <span
-            key={i}
-            className={`h-8 rounded-[3px] ${
-              accent.has(i) ? "bg-accent" : i % 3 === 0 ? "bg-sand-deep" : "bg-sand"
-            }`}
-          />
-        ))}
-      </div>
-      <div className="mt-4 flex items-center gap-3">
-        <span className="h-2 w-2 rounded-full bg-accent" />
-        <span className="h-2 flex-1 rounded-full bg-sand" />
-        <span className="h-2 w-10 rounded-full bg-sand-deep" />
-      </div>
-    </div>
-  );
-}
+import { LearningPortalIllustration } from "@/components/illustrations/LearningPortalIllustration";
 
 export function StudentExperience({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const { student } = dict;
@@ -79,7 +47,7 @@ export function StudentExperience({ dict, locale }: { dict: Dictionary; locale: 
         </div>
 
         <Reveal delay={160} className="lg:ps-8">
-          <PortalSketch label={student.label} />
+          <LearningPortalIllustration locale={locale} label={student.label} className="mx-auto max-w-[38rem]" />
         </Reveal>
       </div>
     </section>

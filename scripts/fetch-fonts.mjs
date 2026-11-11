@@ -16,7 +16,7 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 
 const FONTS = [
   { slug: "vazirmatn", family: "Vazirmatn", query: "Vazirmatn:wght@300..900", subsets: ["arabic", "latin"] },
-  { slug: "inter", family: "Inter", query: "Inter:wght@400..700", subsets: ["latin"] },
+  { slug: "inter", family: "Inter", query: "Inter:wght@400..700", subsets: ["latin", "latin-ext"] },
   { slug: "caveat", family: "Caveat", query: "Caveat:wght@500..700", subsets: ["latin"] },
   { slug: "bricolage", family: "Bricolage Grotesque", query: "Bricolage+Grotesque:wght@400..800", subsets: ["latin"] },
 ];

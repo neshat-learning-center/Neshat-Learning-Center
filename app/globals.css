@@ -438,3 +438,51 @@ html[lang="en"] .ev-hero-title { font-weight: 600; letter-spacing: -0.04em; line
   .ev-spin, .ev-float, .ev-marquee, .ev-in, .ev-tick, .ev-live, .ev-fade, .ev-pop { animation: none !important; }
   .ev-img > img, .ev-img > svg { transition: none; }
 }
+
+/* ─── Language discovery illustration ─────────────────────────────────────
+   All seven scenes stay mounted; the active one fades in (350ms) while its
+   children pop in on a stagger. Idle drifting runs only for the active scene. */
+.li-scene {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 380ms ease, visibility 0s linear 380ms;
+}
+.li-scene[data-on="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 380ms ease, visibility 0s;
+}
+.li-pop {
+  opacity: 0;
+  transform: translateY(12px);
+  transform-box: fill-box;
+  transition: opacity 380ms ease, transform 420ms var(--ease-out-soft);
+  transition-delay: 0ms;
+}
+.li-scene[data-on="true"] .li-pop {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--d, 0ms) * 0.45);
+}
+.li-float {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.li-scene[data-on="true"] .li-float-1 { animation: li-bob 5.2s ease-in-out var(--fd, 0s) infinite; }
+.li-scene[data-on="true"] .li-float-2 { animation: li-bob 6.4s ease-in-out var(--fd, 0s) infinite reverse; }
+.li-scene[data-on="true"] .li-float-3 { animation: li-sway 7s ease-in-out var(--fd, 0s) infinite; }
+.li-scene[data-on="true"] .li-tram { animation: li-tram 7s ease-in-out infinite alternate; }
+.li-scene[data-on="true"] .li-dots circle { animation: li-dot 1.2s ease-in-out infinite; }
+.li-scene[data-on="true"] .li-dots circle:nth-child(2) { animation-delay: 0.15s; }
+.li-scene[data-on="true"] .li-dots circle:nth-child(3) { animation-delay: 0.3s; }
+.li-scene[data-on="true"] .li-wave { animation: li-wave 2s ease-in-out infinite; }
+.li-tram, .li-dots circle { transform-box: fill-box; }
+@keyframes li-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes li-sway { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(3deg); } }
+@keyframes li-tram { from { transform: translateX(-10px); } to { transform: translateX(14px); } }
+@keyframes li-dot { 0%,100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(-4px); opacity: 1; } }
+@keyframes li-wave { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .li-scene, .li-pop { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+  .li-scene * { animation: none !important; }
+}
