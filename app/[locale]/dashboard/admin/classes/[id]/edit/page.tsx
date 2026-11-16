@@ -2,10 +2,13 @@ import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
-import { isSupabaseConfigured, isServiceRoleConfigured } from "@/lib/supabase/config";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getClassById, listCourseOptions, listTeacherOptions, listClassEnrollments } from "@/lib/data/admin";
 import { listMaterialsForClass, resolveMaterialUrl } from "@/lib/data/materials";
 import { deleteClass } from "@/lib/actions/admin/classes";
+import { getJoinPanel } from "@/lib/data/join";
+import { listStudentOptions } from "@/lib/data/links";
+import { JoinCodePanel } from "@/components/dashboard/JoinCodePanel";
 import { NotConnected } from "@/components/admin/NotConnected";
 import { EditPageHeader } from "@/components/admin/EditPageHeader";
 import { ClassForm } from "@/components/admin/ClassForm";
@@ -28,12 +31,14 @@ export default async function EditClassPage({
     return <NotConnected message={dict.admin.notConnected} />;
   }
 
-  const [klass, courses, teachers, enrollments, materialRows] = await Promise.all([
+  const [klass, courses, teachers, enrollments, materialRows, joinPanel, studentOptions] = await Promise.all([
     getClassById(id),
     listCourseOptions(),
     listTeacherOptions(),
     listClassEnrollments(id),
     listMaterialsForClass(id),
+    getJoinPanel(id),
+    listStudentOptions(),
   ]);
   if (!klass) notFound();
 
@@ -61,12 +66,16 @@ export default async function EditClassPage({
       </div>
 
       <div className="mt-12 border-t border-line pt-10">
+        <JoinCodePanel locale={l} classId={id} data={joinPanel} />
+      </div>
+
+      <div className="mt-12 border-t border-line pt-10">
         <EnrollmentManager
           dict={dict}
           locale={l}
           classId={id}
-          enrollments={enrollments}
-          canEnroll={isServiceRoleConfigured()}
+          enrollments={enrollments.map((e) => ({ ...e, studentId: e.student_id }))}
+          students={studentOptions}
         />
       </div>
 

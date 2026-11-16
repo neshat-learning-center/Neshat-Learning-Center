@@ -5,6 +5,8 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { listClassesAdmin } from "@/lib/data/admin";
+import { getClassCounts } from "@/lib/data/links";
+import { lt } from "@/lib/join/links-labels";
 import { href } from "@/lib/utils";
 import { deleteClass } from "@/lib/actions/admin/classes";
 import { NotConnected } from "@/components/admin/NotConnected";
@@ -33,7 +35,8 @@ export default async function AdminClassesPage({
     );
   }
 
-  const classes = await listClassesAdmin();
+  const [classes, counts] = await Promise.all([listClassesAdmin(), getClassCounts()]);
+  const t = lt(l);
   const statusLabel: Record<string, string> = {
     upcoming: a.statusUpcoming,
     active: a.statusActive,
@@ -53,7 +56,7 @@ export default async function AdminClassesPage({
         </Link>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-line bg-canvas">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-line bg-canvas">
         {classes.length === 0 ? (
           <p className="p-6 text-center text-sm text-muted">{a.createdEmpty}</p>
         ) : (
@@ -63,15 +66,35 @@ export default async function AdminClassesPage({
                 <th className="px-5 py-3 text-start font-medium">{dict.dash.name}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.teacher}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.status}</th>
+                <th className="px-5 py-3 text-start font-medium">{t("students")}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.edit}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {classes.map((c) => (
                 <tr key={c.id}>
-                  <td className="px-5 py-3 font-medium text-ink">{c.title}</td>
+                  <td className="px-5 py-3 font-medium text-ink">
+                    <Link href={href(l, `/dashboard/admin/classes/${c.id}/edit`)} className="hover:text-accent-deep hover:underline">
+                      {c.title}
+                    </Link>
+                  </td>
                   <td className="px-5 py-3 text-ink-soft">{c.teacherName ?? a.noTeacher}</td>
                   <td className="px-5 py-3 text-ink-soft">{statusLabel[c.status] ?? c.status}</td>
+                  <td className="px-5 py-3 text-ink-soft">
+                    <span className="numeral">
+                      {counts.enrolled[c.id] ?? 0}
+                      {c.capacity != null ? ` / ${c.capacity}` : ""}
+                    </span>
+                    {(counts.pending[c.id] ?? 0) > 0 && (
+                      <Link
+                        href={href(l, `/dashboard/admin/classes/${c.id}/edit`)}
+                        className="ms-2 rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-slate"
+                        title={t("pendingRequests")}
+                      >
+                        +{counts.pending[c.id]}
+                      </Link>
+                    )}
+                  </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-4">
                       <Link

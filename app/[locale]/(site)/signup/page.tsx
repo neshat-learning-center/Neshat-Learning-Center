@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth";
 import { href } from "@/lib/utils";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
+import { jt } from "@/lib/join/labels";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -37,6 +38,7 @@ export default async function SignUpPage({
         <div className="container-editorial container-editorial-md">
           <Reveal>
             <SignUpForm dict={dict} locale={l} configured={isSupabaseConfigured()} />
+            <p className="mt-6 rounded-md border border-line bg-sand/50 px-5 py-4 text-sm leading-7 text-ink-soft">{jt(l)("signupNote")}</p>
           </Reveal>
         </div>
       </section>

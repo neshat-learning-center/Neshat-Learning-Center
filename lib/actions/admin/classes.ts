@@ -150,3 +150,21 @@ export async function unenrollStudent(locale: Locale, classId: string, enrollmen
   await supabase.from("enrollments").delete().eq("id", enrollmentId);
   revalidatePath(`/${locale}/dashboard/admin/classes/${classId}/edit`);
 }
+
+/** Enrolls a student picked from the list (no service-role key or email needed — admins can write enrollments). */
+export async function enrollStudentById(
+  locale: Locale,
+  classId: string,
+  _prev: EnrollState,
+  formData: FormData,
+): Promise<EnrollState> {
+  const studentId = String(formData.get("student_id") ?? "").trim();
+  if (!studentId) return { error: "pick-student" };
+  const supabase = await createClient();
+  const { error } = await supabase.from("enrollments").insert({ student_id: studentId, class_id: classId });
+  if (error) return { error: error.code === "23505" ? "already-enrolled" : error.message };
+  revalidatePath(`/${locale}/dashboard/admin/classes/${classId}/edit`);
+  revalidatePath(`/${locale}/dashboard/admin/classes`);
+  revalidatePath(`/${locale}/dashboard/admin/students`);
+  return {};
+}

@@ -5,6 +5,8 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { requireAdminSession } from "@/lib/admin-guard";
 import { isSupabaseConfigured, isServiceRoleConfigured } from "@/lib/supabase/config";
 import { listStudents, getUserEmails } from "@/lib/data/admin";
+import { getStudentClassCounts } from "@/lib/data/links";
+import { lt } from "@/lib/join/links-labels";
 import { href } from "@/lib/utils";
 import { deleteStudent } from "@/lib/actions/admin/students";
 import { NotConnected } from "@/components/admin/NotConnected";
@@ -34,9 +36,11 @@ export default async function AdminStudentsPage({
   }
 
   const canDelete = isServiceRoleConfigured();
-  const [students, emails] = await Promise.all([
+  const t = lt(l);
+  const [students, emails, classCounts] = await Promise.all([
     listStudents(),
     canDelete ? getUserEmails() : Promise.resolve({} as Record<string, string>),
+    getStudentClassCounts(),
   ]);
 
   return (
@@ -48,7 +52,7 @@ export default async function AdminStudentsPage({
         <p className="mt-2 text-sm text-muted">{a.serviceRoleMissing}</p>
       )}
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-line bg-canvas">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-line bg-canvas">
         {students.length === 0 ? (
           <p className="p-6 text-center text-sm text-muted">{a.createdEmpty}</p>
         ) : (
@@ -58,19 +62,25 @@ export default async function AdminStudentsPage({
                 <th className="px-5 py-3 text-start font-medium">{dict.dash.name}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.studentEmail}</th>
                 <th className="px-5 py-3 text-start font-medium">{dict.profile.phone}</th>
+                <th className="px-5 py-3 text-start font-medium">{t("classes")}</th>
                 <th className="px-5 py-3 text-start font-medium">{a.edit}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {students.map((s) => (
                 <tr key={s.id}>
-                  <td className="px-5 py-3 font-medium text-ink">{s.full_name ?? "—"}</td>
+                  <td className="px-5 py-3 font-medium text-ink">
+                    <Link href={href(l, `/dashboard/admin/students/${s.id}/edit`)} className="hover:text-accent-deep hover:underline">
+                      {s.full_name ?? "—"}
+                    </Link>
+                  </td>
                   <td className="px-5 py-3 text-ink-soft" dir="ltr">
                     {emails[s.id] ?? "—"}
                   </td>
                   <td className="px-5 py-3 text-ink-soft" dir="ltr">
                     {s.phone ?? "—"}
                   </td>
+                  <td className="numeral px-5 py-3 text-ink-soft">{classCounts[s.id] ?? 0}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-4">
                       <Link

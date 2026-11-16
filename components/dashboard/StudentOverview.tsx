@@ -3,8 +3,12 @@ import type { Locale } from "@/lib/i18n/config";
 import type { StudentData } from "@/lib/dashboard/data";
 import { SectionBlock, InfoCard, ProgressBar, EmptyState } from "./profile-ui";
 import { HomeworkSubmitForm } from "./HomeworkSubmitForm";
+import { JoinClassCard } from "./JoinClassCard";
+import { StudentFinance } from "./MyFinance";
+import type { MyAccount } from "@/lib/data/myfinance";
+import type { StudentJoinData } from "@/lib/data/join";
 
-export function StudentOverview({ dict, locale, data }: { dict: Dictionary; locale: Locale; data: StudentData }) {
+export function StudentOverview({ dict, locale, data, join, account }: { dict: Dictionary; locale: Locale; data: StudentData; join?: StudentJoinData | null; account?: MyAccount | null }) {
   const d = dict.dash;
   const h = dict.homework;
   const classTitleById = new Map(data.classes.map((c) => [c.id, c.title]));
@@ -61,6 +65,11 @@ export function StudentOverview({ dict, locale, data }: { dict: Dictionary; loca
                 )}
               </InfoCard>
             ))}
+          </div>
+        )}
+        {join && (
+          <div className="mt-6">
+            <JoinClassCard locale={locale} data={join} hasClasses={data.classes.length > 0} />
           </div>
         )}
       </SectionBlock>
@@ -227,6 +236,8 @@ export function StudentOverview({ dict, locale, data }: { dict: Dictionary; loca
           </ul>
         )}
       </SectionBlock>
+
+      {account && <StudentFinance locale={locale} account={account} index={8} />}
     </div>
   );
 }

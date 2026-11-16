@@ -7,9 +7,13 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getClassById } from "@/lib/data/admin";
 import { listMaterialsForClass, resolveMaterialUrl } from "@/lib/data/materials";
 import { listHomeworkForClass } from "@/lib/data/homework";
-import { getClassRosterForToday } from "@/lib/data/attendance";
+import { listClassStudents } from "@/lib/data/links";
+import { StudentProgressRow } from "@/components/dashboard/StudentProgressRow";
+import { lt } from "@/lib/join/links-labels";
 import { NotConnected } from "@/components/admin/NotConnected";
 import { MaterialsManager } from "@/components/admin/MaterialsManager";
+import { getJoinPanel } from "@/lib/data/join";
+import { JoinCodePanel } from "@/components/dashboard/JoinCodePanel";
 import { HomeworkManager } from "@/components/dashboard/HomeworkManager";
 
 export default async function TeacherClassPage({
@@ -41,10 +45,11 @@ export default async function TeacherClassPage({
   if (!klass) notFound();
   if (session.role !== "admin" && klass.teacher_id !== session.id) notFound();
 
-  const [materialRows, homework, roster] = await Promise.all([
+  const [materialRows, homework, roster, joinPanel] = await Promise.all([
     listMaterialsForClass(classId),
     listHomeworkForClass(classId),
-    getClassRosterForToday(classId),
+    listClassStudents(classId),
+    getJoinPanel(classId),
   ]);
   const materials = await Promise.all(
     materialRows.map(async (m) => ({
@@ -65,6 +70,7 @@ export default async function TeacherClassPage({
 
       <div>
         <h2 className="eyebrow">{dict.homework.roster}</h2>
+        <p className="mt-2 max-w-xl text-sm text-muted">{lt(l)("rosterHelp")}</p>
         {roster.length === 0 ? (
           <p className="mt-4 rounded-lg border border-dashed border-line-strong p-6 text-center text-sm text-muted">
             {dict.homework.noStudentsEnrolled}
@@ -72,13 +78,22 @@ export default async function TeacherClassPage({
         ) : (
           <ul className="mt-4 divide-y divide-line rounded-lg border border-line bg-canvas">
             {roster.map((r) => (
-              <li key={r.enrollmentId} className="px-5 py-3 text-sm font-medium text-ink">
-                {r.studentName}
-              </li>
+              <StudentProgressRow
+                key={r.enrollmentId}
+                locale={l}
+                classId={classId}
+                enrollmentId={r.enrollmentId}
+                name={r.name}
+                phone={r.phone}
+                level={r.level}
+                progress={r.progress}
+              />
             ))}
           </ul>
         )}
       </div>
+
+      <JoinCodePanel locale={l} classId={classId} data={joinPanel} />
 
       <HomeworkManager dict={dict} locale={l} classId={classId} homework={homework} />
 

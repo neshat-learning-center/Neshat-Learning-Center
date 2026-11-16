@@ -11,6 +11,8 @@
     "test:finance:sql": "node scripts/finance-sql-test.mjs",
     "test:events": "tsx scripts/events-selftest.ts",
     "test:events:sql": "node scripts/events-sql-test.mjs",
+    "test:join:sql": "node scripts/join-sql-test.mjs",
+    "test:myfin:sql": "node scripts/my-finance-sql-test.mjs",
     "test:events:integration": "tsx scripts/events-integration-test.mts"
   },
   "dependencies": {

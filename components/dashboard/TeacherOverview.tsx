@@ -4,15 +4,21 @@ import type { Locale } from "@/lib/i18n/config";
 import type { TeacherData } from "@/lib/dashboard/data";
 import { href } from "@/lib/utils";
 import { SectionBlock, InfoCard, EmptyState } from "./profile-ui";
+import { TeacherSalary } from "./MyFinance";
+import type { MySalaryStatement, MySalaryPayment } from "@/lib/data/myfinance";
 
 export function TeacherOverview({
   dict,
   locale,
   data,
+  pending,
+  salary,
 }: {
   dict: Dictionary;
   locale: Locale;
   data: TeacherData;
+  pending?: Record<string, number>;
+  salary?: { statements: MySalaryStatement[]; payments: MySalaryPayment[] } | null;
 }) {
   const d = dict.dash;
   const h = dict.homework;
@@ -53,6 +59,11 @@ export function TeacherOverview({
                     className="text-sm font-medium text-ink-soft hover:text-ink hover:underline"
                   >
                     {h.manageClass}
+                    {(pending?.[c.id] ?? 0) > 0 && (
+                      <span className="numeral ms-2 rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-slate">
+                        +{pending?.[c.id]}
+                      </span>
+                    )}
                   </Link>
                 </div>
               </InfoCard>
@@ -186,6 +197,8 @@ export function TeacherOverview({
           </div>
         )}
       </SectionBlock>
+
+      {salary && <TeacherSalary locale={locale} statements={salary.statements} payments={salary.payments} index={7} />}
     </div>
   );
 }

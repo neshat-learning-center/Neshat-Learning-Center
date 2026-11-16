@@ -166,17 +166,17 @@ export async function getClassById(id: string): Promise<ClassRow | null> {
 
 export async function listClassEnrollments(
   classId: string,
-): Promise<(Enrollment & { studentName: string | null })[]> {
+): Promise<(Enrollment & { studentName: string | null; studentPhone: string | null })[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("enrollments")
-    .select("*, student:profiles(full_name)")
+    .select("*, student:profiles(full_name, phone)")
     .eq("class_id", classId);
   return (
     data?.map((row) => {
       const rel = row.student as unknown;
-      const s = (Array.isArray(rel) ? rel[0] : rel) as { full_name?: string } | undefined;
-      return { ...row, studentName: s?.full_name ?? null };
+      const s = (Array.isArray(rel) ? rel[0] : rel) as { full_name?: string; phone?: string } | undefined;
+      return { ...row, studentName: s?.full_name ?? null, studentPhone: s?.phone ?? null };
     }) ?? []
   );
 }

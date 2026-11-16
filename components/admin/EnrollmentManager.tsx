@@ -1,88 +1,62 @@
 "use client";
 
-import { useActionState } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-import { TextInput } from "@/components/admin/fields";
 import { ConfirmForm } from "@/components/admin/ConfirmForm";
-import { enrollStudent, unenrollStudent, type EnrollState } from "@/lib/actions/admin/classes";
+import { unenrollStudent } from "@/lib/actions/admin/classes";
+import { StudentProgressRow } from "@/components/dashboard/StudentProgressRow";
+import { StudentPicker } from "@/components/admin/StudentPicker";
+import type { StudentOption } from "@/lib/data/links";
 
 export function EnrollmentManager({
   dict,
   locale,
   classId,
   enrollments,
-  canEnroll,
+  students,
 }: {
   dict: Dictionary;
   locale: Locale;
   classId: string;
-  enrollments: { id: string; studentName: string | null }[];
-  canEnroll: boolean;
+  students: StudentOption[];
+  enrollments: { id: string; studentId?: string | null; studentName: string | null; studentPhone?: string | null; level?: string | null; progress?: number | null }[];
 }) {
-  const [state, formAction, pending] = useActionState<EnrollState, FormData>(
-    enrollStudent.bind(null, locale, classId),
-    {},
-  );
   const a = dict.admin;
-
-  const errorMessage =
-    state.error === "user-not-found"
-      ? a.userNotFound
-      : state.error === "email-required"
-        ? a.emailRequired
-        : state.error === "service-role-missing"
-          ? a.serviceRoleMissing
-          : state.error;
 
   return (
     <div>
       <h2 className="eyebrow">{a.enrolledStudents}</h2>
 
       {enrollments.length > 0 && (
-        <ul className="mt-4 flex flex-col divide-y divide-line border-y border-line">
+        <ul className="mt-4 flex flex-col divide-y divide-line rounded-lg border border-line bg-canvas">
           {enrollments.map((e) => (
-            <li key={e.id} className="flex items-center justify-between py-3 text-sm">
-              <span className="text-ink">{e.studentName ?? "—"}</span>
-              <ConfirmForm
-                action={unenrollStudent.bind(null, locale, classId, e.id)}
-                confirmText={a.confirmDelete}
-                cancelLabel={a.cancel}
-                confirmLabel={a.remove}
-              >
-                <button type="submit" className="text-red-600 hover:underline">
-                  {a.remove}
-                </button>
-              </ConfirmForm>
-            </li>
+            <StudentProgressRow
+              key={e.id}
+              locale={locale}
+              classId={classId}
+              enrollmentId={e.id}
+              name={e.studentName ?? "—"}
+              phone={e.studentPhone}
+              level={e.level ?? ""}
+              progress={e.progress ?? 0}
+              extra={
+                <ConfirmForm
+                  action={unenrollStudent.bind(null, locale, classId, e.id)}
+                  confirmText={a.confirmDelete}
+                  cancelLabel={a.cancel}
+                  confirmLabel={a.remove}
+                >
+                  <button type="submit" className="text-sm text-red-600 hover:underline">
+                    {a.remove}
+                  </button>
+                </ConfirmForm>
+              }
+            />
           ))}
         </ul>
       )}
 
-      {canEnroll ? (
-        <form action={formAction} className="mt-5 flex items-end gap-3">
-          <div className="flex-1">
-            <TextInput
-              name="email"
-              type="email"
-              dir="ltr"
-              className="text-start"
-              placeholder={a.studentEmail}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={pending}
-            className="shrink-0 rounded-full border border-line-strong px-5 py-3 text-sm text-ink transition-colors hover:border-ink disabled:opacity-60"
-          >
-            {a.addStudent}
-          </button>
-        </form>
-      ) : (
-        <p className="mt-4 text-sm text-muted">{a.serviceRoleMissing}</p>
-      )}
-      {errorMessage && <p className="mt-2 text-sm text-red-600">{errorMessage}</p>}
+      <StudentPicker locale={locale} classId={classId} students={students} enrolledIds={enrollments.map((e) => e.studentId ?? "")} />
     </div>
   );
 }
