@@ -6,7 +6,6 @@ import { nowMs, splitByPhase } from "@/lib/events/time";
 import { makeET } from "@/lib/events/labels";
 import { Reveal } from "@/components/ui/Reveal";
 import { PhotoComposition } from "@/components/events/EventsHero";
-import { pickHeroPhotos } from "@/components/events/info";
 import { ArrowIcon } from "@/components/events/shared";
 
 /**
@@ -21,7 +20,6 @@ export function EventsTeaser({ events, locale }: { events: EventItem[]; locale: 
   const now = nowMs();
   const { upcoming, past } = splitByPhase(events, now);
   const tagEvent = upcoming.find((e) => e.featured) ?? upcoming[0] ?? null;
-  const photos = pickHeroPhotos(tagEvent, upcoming, past);
 
   return (
     <section id="events" className="section-x relative overflow-hidden border-y border-line bg-sand/40 py-20 md:py-28">
@@ -69,7 +67,7 @@ export function EventsTeaser({ events, locale }: { events: EventItem[]; locale: 
           </Reveal>
         </div>
 
-        <PhotoComposition locale={locale} tagEvent={tagEvent} now={now} photos={photos} className="lg:col-span-6" />
+        <PhotoComposition locale={locale} tagEvent={tagEvent} now={now} className="lg:col-span-6" />
       </div>
     </section>
   );

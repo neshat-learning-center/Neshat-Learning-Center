@@ -74,13 +74,14 @@ function Photo({ slot, art, url, alt, className, style }: { slot: Slot; art: Art
 
 /** The layered photographs + floating event tag, shared by the Events hero and the home-page teaser. */
 export function PhotoComposition({
-  locale, tagEvent, now, photos, art = "home", className = "",
-}: { locale: Locale; tagEvent: EventItem | null; now: number; photos: string[]; art?: Art; className?: string }) {
+  locale, tagEvent, now, art = "home", className = "",
+}: { locale: Locale; tagEvent: EventItem | null; now: number; art?: Art; className?: string }) {
   const t = makeET(locale);
   const d = tagEvent ? dateParts(tagEvent.startsAt, locale) : null;
   const state = tagEvent ? availability(tagEvent, now) : null;
   const open = state === "open" || state === "waitlist";
-  const [main, side, third] = photos;
+  // The hero artwork is fixed editorial art — an event's own cover photo never replaces it.
+  const main = undefined, side = undefined, third = undefined;
   return (
       <div className={`group/photos relative ${className}`}>
         <div className="relative mx-auto aspect-[1/1.08] w-full max-w-[34rem] sm:aspect-[1/0.95] lg:aspect-[1/1.08] lg:max-w-none">
@@ -140,8 +141,8 @@ export function PhotoComposition({
  * floating tag that always reflects real database events.
  */
 export function EventsHero({
-  locale, tagEvent, now, categories, photos, hasMemories,
-}: { locale: Locale; tagEvent: EventItem | null; now: number; categories: EventCategory[]; photos: string[]; hasMemories: boolean }) {
+  locale, tagEvent, now, categories, hasMemories,
+}: { locale: Locale; tagEvent: EventItem | null; now: number; categories: EventCategory[]; hasMemories: boolean }) {
   const t = makeET(locale);
   const fa = locale === "fa";
   return (
@@ -185,7 +186,7 @@ export function EventsHero({
           </div>
 
           {/* ---- photographs ---- */}
-          <PhotoComposition locale={locale} tagEvent={tagEvent} now={now} photos={photos} art="events" className="lg:col-span-6" />
+          <PhotoComposition locale={locale} tagEvent={tagEvent} now={now} art="events" className="lg:col-span-6" />
         </div>
       </div>
       <Marquee categories={categories} locale={locale} />

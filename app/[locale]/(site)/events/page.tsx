@@ -11,7 +11,6 @@ import { EventsExplorer } from "@/components/events/EventsExplorer";
 import { UpcomingBand } from "@/components/events/UpcomingBand";
 import { Memories, type Memory } from "@/components/events/Memories";
 import { pickL } from "@/components/events/shared";
-import { pickHeroPhotos } from "@/components/events/info";
 
 // Events change from the admin at any time and the page shows live seats and countdowns: always read fresh.
 export const dynamic = "force-dynamic";
@@ -35,7 +34,6 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
   const featured = upcoming.find((e) => e.featured) ?? null;
   const next = upcoming[0] ?? null;
   const tagEvent = featured ?? next;
-  const photos = pickHeroPhotos(tagEvent, upcoming, past);
   const after = upcoming.filter((e) => e.id !== next?.id).slice(0, 2);
 
   const memories: Memory[] = past.map((e) => ({
@@ -56,7 +54,7 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
 
   return (
     <>
-      <EventsHero locale={l} tagEvent={tagEvent} now={now} categories={categories} photos={photos} hasMemories={memories.length > 0} />
+      <EventsHero locale={l} tagEvent={tagEvent} now={now} categories={categories} hasMemories={memories.length > 0} />
       <EventsSubnav items={nav} />
       {featured && <FeaturedEvent ev={featured} locale={l} now={now} />}
       <EventsExplorer events={upcoming} categories={categories} locale={l} now={now} />
