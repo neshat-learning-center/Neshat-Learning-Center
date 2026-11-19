@@ -57,6 +57,8 @@ export interface ClassRow {
   classroom: string | null;
   /** The days the class meets on — the source of truth for the schedule. */
   schedule_days: string[] | null;
+  /** One { day, start, end } per meeting day — the source of truth for per-day times (see lib/schedule.ts). */
+  schedule_slots: { day: string; start: string; end: string }[] | null;
   /** Persian display text derived from `schedule_days` on save, e.g. "شنبه، دوشنبه" */
   schedule: string | null;
   /** English display text derived from `schedule_days` on save, e.g. "Sat, Mon" */

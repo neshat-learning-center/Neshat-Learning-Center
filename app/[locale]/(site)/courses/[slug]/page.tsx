@@ -231,11 +231,25 @@ export default async function CourseDetail({
                             </span>
                           </div>
 
-                          {c.startTime && (
-                            <p className="mt-5 text-3xl font-extrabold tracking-tight text-ink" dir="ltr" style={{ textAlign: "start" }}>
-                              {formatTime(c.startTime)}
-                              {c.endTime && <span className="text-muted"> – {formatTime(c.endTime)}</span>}
-                            </p>
+                          {c.timeGroups.length > 1 ? (
+                            <ul className="mt-5 flex flex-col gap-2.5">
+                              {c.timeGroups.map((g) => (
+                                <li key={`${g.start}-${g.end}`} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-2.5 last:border-0 last:pb-0">
+                                  <span className="text-sm font-medium text-ink-soft">{g.days.join(locale === "fa" ? "، " : ", ")}</span>
+                                  <span className="text-xl font-extrabold tracking-tight text-ink" dir="ltr">
+                                    {g.start}
+                                    <span className="text-muted"> – {g.end}</span>
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            c.startTime && (
+                              <p className="mt-5 text-3xl font-extrabold tracking-tight text-ink" dir="ltr" style={{ textAlign: "start" }}>
+                                {formatTime(c.startTime)}
+                                {c.endTime && <span className="text-muted"> – {formatTime(c.endTime)}</span>}
+                              </p>
+                            )
                           )}
 
                           {c.teacherName && (

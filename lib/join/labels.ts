@@ -49,6 +49,7 @@ export const J = {
     "Share this code in the class group (WhatsApp, Telegram…) so current students join themselves. No need to type names in.",
   ],
   copy: ["کپی", "Copy"],
+  cancelBtn: ["انصراف", "Cancel"],
   copied: ["کپی شد", "Copied"],
   regenerate: ["ساخت کد جدید", "Generate new code"],
   regenerateConfirm: ["کد قبلی از کار می‌افتد. ادامه می‌دهی؟", "The old code will stop working. Continue?"],

@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { StudentJoinData } from "@/lib/data/join";
 import { joinClassByCode, requestJoinClass, cancelJoinRequest, type JoinState } from "@/lib/actions/join";
 import { jt } from "@/lib/join/labels";
+import { Select } from "@/components/admin/fields";
 
 const field =
   "w-full rounded-md border border-line-strong bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-accent";
@@ -69,7 +70,7 @@ export function JoinClassCard({ locale, data, hasClasses }: { locale: Locale; da
             <form action={reqAction} className="flex flex-col gap-4">
               <label className="flex max-w-xl flex-col gap-2">
                 <span className="text-sm font-medium text-ink">{t("pickClass")}</span>
-                <select name="class_id" required defaultValue="" className={field}>
+                <Select name="class_id" required defaultValue="">
                   <option value="" disabled>
                     {t("pickPh")}
                   </option>
@@ -78,7 +79,7 @@ export function JoinClassCard({ locale, data, hasClasses }: { locale: Locale; da
                       {c.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               {data.classes.length === 0 ? (
                 <p className="text-sm text-muted">{t("noClasses")}</p>

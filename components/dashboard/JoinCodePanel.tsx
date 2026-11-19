@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { JoinPanelData } from "@/lib/data/join";
 import { decideJoinRequest, regenerateJoinCode, setJoinApproval } from "@/lib/actions/join";
 import { jt } from "@/lib/join/labels";
+import { ConfirmForm } from "@/components/admin/ConfirmForm";
 
 const fmt = (c: string) => `${c.slice(0, 4)}-${c.slice(4)}`;
 
@@ -45,21 +46,24 @@ export function JoinCodePanel({ locale, classId, data }: { locale: Locale; class
         <button type="button" onClick={copy} disabled={!code} className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-slate transition-colors hover:bg-accent-deep disabled:opacity-60">
           {copied ? t("copied") : t("copy")}
         </button>
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() => {
-            if (!window.confirm(t("regenerateConfirm"))) return;
-            start(async () => {
-              const r = await regenerateJoinCode(locale, classId);
-              if (r.code) setCode(r.code);
-              setErr(r.error ?? null);
-            });
+        <ConfirmForm
+          action={async () => {
+            const r = await regenerateJoinCode(locale, classId);
+            if (r.code) setCode(r.code);
+            setErr(r.error ?? null);
           }}
-          className="rounded-full border border-line-strong px-5 py-2.5 text-sm text-ink transition-colors hover:border-accent disabled:opacity-60"
+          confirmText={t("regenerateConfirm")}
+          cancelLabel={t("cancelBtn")}
+          confirmLabel={t("regenerate")}
         >
-          {t("regenerate")}
-        </button>
+          <button
+            type="submit"
+            disabled={pending}
+            className="rounded-full border border-line-strong px-5 py-2.5 text-sm text-ink transition-colors hover:border-accent disabled:opacity-60"
+          >
+            {t("regenerate")}
+          </button>
+        </ConfirmForm>
       </div>
 
       <label className="mt-6 flex max-w-xl cursor-pointer items-start gap-3">

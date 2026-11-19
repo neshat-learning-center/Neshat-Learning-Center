@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { ClassMode } from "@/lib/supabase/types";
 import type { Locale } from "@/lib/i18n/config";
+import { slotsOf, groupSlots, dayLabel, type Weekday } from "@/lib/schedule";
 
 export interface EnrollableClass {
   id: string;
@@ -10,6 +11,8 @@ export interface EnrollableClass {
   startDate: string | null;
   startTime: string | null;
   endTime: string | null;
+  /** Meeting times grouped by identical time — more than one group means different days run at different times. */
+  timeGroups: { days: string[]; start: string; end: string }[];
   teacherName: string | null;
   classroom: string | null;
   mode: ClassMode;
@@ -44,7 +47,7 @@ export async function listEnrollableClasses(
   const { data: classes } = await supabase
     .from("classes")
     .select(
-      "id, schedule, schedule_en, start_date, start_time, end_time, classroom, mode, online_meeting_url, capacity, teacher:profiles(full_name, full_name_en)",
+      "id, schedule, schedule_en, schedule_days, schedule_slots, start_date, start_time, end_time, classroom, mode, online_meeting_url, capacity, teacher:profiles(full_name, full_name_en)",
     )
     .eq("course_id", courseId)
     .in("status", ["upcoming", "active"]);
@@ -93,6 +96,7 @@ export async function listEnrollableClasses(
       startDate: c.start_date,
       startTime: c.start_time,
       endTime: c.end_time,
+      timeGroups: groupSlots(slotsOf(c)).map((g) => ({ ...g, days: g.days.map((d: Weekday) => dayLabel(d, locale)) })),
       teacherName,
       classroom: c.classroom,
       mode: c.mode,

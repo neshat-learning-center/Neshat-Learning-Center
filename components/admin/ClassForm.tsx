@@ -4,9 +4,9 @@ import { useActionState, useState } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { ClassMode, ClassRow } from "@/lib/supabase/types";
-import { Field, TextInput, Select, TimeSelect, SubmitButton } from "@/components/admin/fields";
+import { Field, TextInput, Select, SubmitButton } from "@/components/admin/fields";
 import { DatePicker } from "@/components/admin/DatePicker";
-import { WEEKDAYS, dayLabel } from "@/lib/schedule";
+import { ClassScheduleField } from "@/components/admin/ClassScheduleField";
 import { createClass, updateClass, type AdminFormState } from "@/lib/actions/admin/classes";
 
 export function ClassForm({
@@ -87,36 +87,17 @@ export function ClassForm({
         )}
       </div>
 
-      <Field label={a.scheduleDays}>
-        <div className="flex flex-wrap gap-2">
-          {WEEKDAYS.map((day) => (
-            <label key={day} className="cursor-pointer">
-              <input
-                type="checkbox"
-                name="schedule_days"
-                value={day}
-                defaultChecked={klass?.schedule_days?.includes(day) ?? false}
-                className="peer sr-only"
-              />
-              <span className="inline-block rounded-full border border-line-strong px-4 py-2 text-sm font-medium text-ink transition-colors peer-checked:border-accent peer-checked:bg-accent peer-checked:text-slate">
-                {dayLabel(day, locale)}
-              </span>
-            </label>
-          ))}
-        </div>
-      </Field>
-
-      <div>
-        <span className="text-sm font-medium text-ink">{a.classTime}</span>
-        <div className="mt-2 grid gap-6 sm:grid-cols-2">
-          <Field label={a.classStartTime}>
-            <TimeSelect name="start_time" required defaultValue={klass?.start_time} />
-          </Field>
-          <Field label={a.classEndTime}>
-            <TimeSelect name="end_time" required defaultValue={klass?.end_time} />
-          </Field>
-        </div>
-      </div>
+      <ClassScheduleField
+        locale={locale}
+        klass={klass}
+        labels={{
+          scheduleDays: a.scheduleDays,
+          classTime: a.classTime,
+          classStartTime: a.classStartTime,
+          classEndTime: a.classEndTime,
+          sameTimeAllDays: a.sameTimeAllDays,
+        }}
+      />
 
       <Field label={a.startDate}>
         <DatePicker
@@ -144,7 +125,13 @@ export function ClassForm({
 
       {state.error && (
         <p className="text-sm text-red-600">
-          {state.error === "schedule-days-required" ? a.scheduleDaysRequired : state.error}
+          {state.error === "schedule-days-required"
+            ? a.scheduleDaysRequired
+            : state.error === "schedule-times-required"
+              ? a.scheduleTimesRequired
+              : state.error === "schedule-times-invalid"
+                ? a.scheduleTimesInvalid
+                : state.error}
         </p>
       )}
       <SubmitButton pending={pending}>{pending ? a.saving : a.save}</SubmitButton>

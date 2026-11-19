@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isServiceRoleConfigured } from "@/lib/supabase/config";
 import type { Locale } from "@/lib/i18n/config";
 import type { ClassMode, ClassStatus } from "@/lib/supabase/types";
-import { isWeekday, formatScheduleDays } from "@/lib/schedule";
+import { WEEKDAYS, isWeekday, isHHMM, toMinutes, formatScheduleDays, type Slot } from "@/lib/schedule";
 
 export type AdminFormState = { error?: string };
 
@@ -17,7 +17,24 @@ function readClassFields(formData: FormData) {
   const capacity = String(formData.get("capacity") ?? "").trim();
   const mode = (String(formData.get("mode") ?? "offline").trim() as ClassMode) || "offline";
   const schedule_days = formData.getAll("schedule_days").map(String).filter(isWeekday);
+  // Per-day times. "Same time on every day" (the default) applies one From/To to all days;
+  // otherwise each picked day carries its own slot_start_<day> / slot_end_<day>.
+  const sameTime = String(formData.get("same_time") ?? "1") !== "0";
+  const read = (k: string) => String(formData.get(k) ?? "").trim().slice(0, 5);
+  const slots: Slot[] = WEEKDAYS.filter((d) => schedule_days.includes(d)).map((day) => ({
+    day,
+    start: sameTime ? read("start_time") : read(`slot_start_${day}`),
+    end: sameTime ? read("end_time") : read(`slot_end_${day}`),
+  }));
+  const slotsError = !slots.length
+    ? null
+    : slots.some((s) => !isHHMM(s.start) || !isHHMM(s.end))
+      ? "schedule-times-required"
+      : slots.some((s) => toMinutes(s.end) <= toMinutes(s.start))
+        ? "schedule-times-invalid"
+        : null;
   return {
+    slotsError,
     course_id: course_id || null,
     teacher_id: teacher_id || null,
     mode,
@@ -32,8 +49,10 @@ function readClassFields(formData: FormData) {
     schedule: formatScheduleDays(schedule_days, "fa") || null,
     schedule_en: formatScheduleDays(schedule_days, "en") || null,
     start_date: String(formData.get("start_date") ?? "").trim() || null,
-    start_time: String(formData.get("start_time") ?? "").trim() || null,
-    end_time: String(formData.get("end_time") ?? "").trim() || null,
+    schedule_slots: slots.length ? slots : null,
+    // legacy single time = the first meeting day's slot, so older readers keep working
+    start_time: slots[0]?.start || null,
+    end_time: slots[0]?.end || null,
     status: String(formData.get("status") ?? "upcoming") as ClassStatus,
     capacity: capacity ? Number(capacity) : null,
   };
@@ -73,8 +92,9 @@ export async function createClass(
   _prev: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const fields = readClassFields(formData);
+  const { slotsError, ...fields } = readClassFields(formData);
   if (!fields.schedule_days) return { error: "schedule-days-required" };
+  if (slotsError) return { error: slotsError };
   const supabase = await createClient();
   const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
   const { error } = await supabase.from("classes").insert({ ...fields, title: title.fa, title_en: title.en });
@@ -91,8 +111,9 @@ export async function updateClass(
   _prev: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const fields = readClassFields(formData);
+  const { slotsError, ...fields } = readClassFields(formData);
   if (!fields.schedule_days) return { error: "schedule-days-required" };
+  if (slotsError) return { error: slotsError };
   const supabase = await createClient();
   const title = await buildClassTitle(supabase, fields.course_id, fields.schedule, fields.schedule_en);
   const { error } = await supabase

@@ -1,4 +1,5 @@
 import "server-only";
+import { slotsOf, weekdayOfIso } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Locale } from "@/lib/i18n/config";
@@ -38,6 +39,12 @@ function minutesBetween(start?: string | null, end?: string | null): number | nu
   return d > 0 ? d : null;
 }
 
+/** Length of the slot that falls on `date`'s weekday, if the class has per-day times. */
+function slotMinutes(c: Row, date: string): number | null {
+  const slot = slotsOf(c).find((s) => s.day === weekdayOfIso(date));
+  return slot ? minutesBetween(slot.start, slot.end) : null;
+}
+
 export async function loadLedger(locale: Locale): Promise<LedgerResult> {
   if (!isSupabaseConfigured()) return { ok: false, reason: "not_configured" };
   const sb = await createClient();
@@ -54,7 +61,7 @@ export async function loadLedger(locale: Locale): Promise<LedgerResult> {
       await Promise.all([
         fetchAll(sb, "teacher_finance_profiles", "*", "teacher_id"),
         fetchAll(sb, "profiles", "id, full_name, full_name_en, role"),
-        fetchAll(sb, "classes", "id, title, title_en, teacher_id, course_id, start_time, end_time, courses(title)"),
+        fetchAll(sb, "classes", "id, title, title_en, teacher_id, course_id, start_time, end_time, schedule_days, schedule_slots, courses(title)"),
         fetchAll(sb, "enrollments", "id, student_id, class_id, student:profiles(full_name, full_name_en)"),
         fetchAll(sb, "student_fees", "*", "enrollment_id"),
         fetchAll(sb, "student_payments"),
@@ -114,7 +121,9 @@ export async function loadLedger(locale: Locale): Promise<LedgerResult> {
         classId: s.class_id,
         teacherId: c.teacher_id,
         date: s.session_date,
-        minutes: minutesBetween(c.start_time, c.end_time) ?? settings.default_session_minutes,
+        // a class that meets at different times on different days is paid by the length of THAT day's slot
+        minutes:
+          slotMinutes(c, s.session_date) ?? minutesBetween(c.start_time, c.end_time) ?? settings.default_session_minutes,
       });
     }
 

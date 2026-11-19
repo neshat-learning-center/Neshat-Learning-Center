@@ -6,7 +6,7 @@ import { makeET } from "@/lib/events/labels";
 import { EVENT_STATUSES, type EventItem, type EventCategory } from "@/lib/events/types";
 import { isoToTehranParts } from "@/lib/events/time";
 import { saveEvent, type EvState } from "@/lib/actions/admin/events";
-import { Field, TextInput, TextArea, Select } from "@/components/admin/fields";
+import { Field, TextInput, TextArea, Select, TimeSelect } from "@/components/admin/fields";
 import { DatePicker } from "@/components/admin/DatePicker";
 import { MoneyInput } from "@/components/finance/FinForm";
 import { CoverUpload, GalleryUpload } from "./ImageFields";
@@ -71,13 +71,13 @@ export function EventForm({ locale, event, categories, folderKey }: { locale: Lo
         <p className="text-sm text-muted">{t("a_tzNote")}</p>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Field label={t("a_startDate")}><DatePicker name="start_date" locale={locale} defaultValue={start.date} required /></Field>
-          <Field label={t("a_startTime")}><TextInput type="time" name="start_time" required dir="ltr" className="text-start" defaultValue={start.time || "18:00"} /></Field>
+          <Field label={t("a_startTime")}><TimeSelect name="start_time" required defaultValue={start.time || "18:00"} /></Field>
           <Field label={t("a_endDate")}><DatePicker name="end_date" locale={locale} defaultValue={end.date} /></Field>
-          <Field label={t("a_endTime")}><TextInput type="time" name="end_time" dir="ltr" className="text-start" defaultValue={end.time} /></Field>
+          <Field label={t("a_endTime")}><TimeSelect name="end_time" clearable defaultValue={end.time} /></Field>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Field label={t("a_deadlineDate")}><DatePicker name="deadline_date" locale={locale} defaultValue={dl.date} /></Field>
-          <Field label={t("a_deadlineTime")}><TextInput type="time" name="deadline_time" dir="ltr" className="text-start" defaultValue={dl.time || "23:59"} /></Field>
+          <Field label={t("a_deadlineTime")}><TimeSelect name="deadline_time" clearable defaultValue={dl.time || "23:59"} /></Field>
         </div>
       </Group>
 

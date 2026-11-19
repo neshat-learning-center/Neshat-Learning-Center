@@ -147,6 +147,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
         onKeyDown={onKeyDown}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={props["aria-label"]}
         className={`${base} flex items-center justify-between gap-2 text-start ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"} ${className ?? ""}`}
       >
         <span className={`truncate ${selected ? "" : "text-muted/70"}`}>{selected ? selected.label : "—"}</span>
@@ -191,7 +192,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
                     : "text-ink-soft"
               } ${o.value === current && !o.disabled ? "font-medium text-ink" : ""}`}
             >
-              <span className="truncate">{o.label}</span>
+              <span className="min-w-0 break-words">{o.label}</span>
               {o.value === current && !o.disabled && (
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0 text-accent-deep">
                   <path d="M3.5 8.5l3 3 6-6.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -224,25 +225,43 @@ function generateTimeOptions(step: number): string[] {
 export function TimeSelect({
   name,
   defaultValue,
+  value,
+  onChange,
   required,
+  clearable,
   step = 15,
   placeholder = "—",
+  ariaLabel,
 }: {
-  name: string;
+  name?: string;
   defaultValue?: string | null;
+  /** Controlled use (e.g. a row inside a list editor). */
+  value?: string;
+  onChange?: (value: string) => void;
   required?: boolean;
+  /** Optional times: lets the user pick "—" again to clear the value. */
+  clearable?: boolean;
   step?: number;
   placeholder?: string;
+  ariaLabel?: string;
 }) {
-  const value = defaultValue ? defaultValue.slice(0, 5) : "";
+  const current = (value ?? defaultValue ?? "").slice(0, 5);
   const times = useMemo(() => {
     const base = generateTimeOptions(step);
-    return value && !base.includes(value) ? [...base, value].sort() : base;
-  }, [step, value]);
+    return current && !base.includes(current) ? [...base, current].sort() : base;
+  }, [step, current]);
 
   return (
-    <Select name={name} required={required} defaultValue={value} className="text-start" dir="ltr">
-      <option value="" disabled>
+    <Select
+      name={name}
+      required={required}
+      aria-label={ariaLabel}
+      {...(value !== undefined ? { value: value.slice(0, 5) } : { defaultValue: current })}
+      onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+      className="text-start"
+      dir="ltr"
+    >
+      <option value="" disabled={!clearable}>
         {placeholder}
       </option>
       {times.map((t) => (

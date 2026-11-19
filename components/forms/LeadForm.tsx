@@ -7,6 +7,7 @@ import { pick } from "@/lib/i18n/config";
 import { categories } from "@/content/categories";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { submitLead, type LeadFormState } from "@/lib/actions/leads";
+import { Select } from "@/components/admin/fields";
 
 const field =
   "w-full border-0 border-b border-line-strong bg-transparent px-0 py-3 text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-accent";
@@ -77,7 +78,7 @@ export function LeadForm({
       {showLanguage && (
         <label className="flex flex-col gap-2">
           <span className={labelCls}>{f.language}</span>
-          <select name="language" defaultValue="" className={`${field} cursor-pointer`}>
+          <Select name="language" defaultValue="">
             <option value="" disabled>
               {f.choose}
             </option>
@@ -86,7 +87,7 @@ export function LeadForm({
                 {pick(c.title, locale)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       )}
 
