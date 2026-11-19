@@ -20,10 +20,11 @@ function periodText(key: string, locale: Locale): string {
 /** Student: fee, paid and remaining per class, plus the payment history the institute recorded. */
 export function StudentFinance({ locale, account, index }: { locale: Locale; account: MyAccount; index: number }) {
   const t = lt(locale);
-  if (account.classes.length === 0 && account.payments.length === 0) return null;
+  const empty = account.classes.length === 0 && account.payments.length === 0;
   return (
     <SectionBlock id="fees" index={index} title={t("feesTitle")}>
       <p className="-mt-3 mb-6 max-w-xl text-sm text-muted">{t("feesLead")}</p>
+      {empty && <EmptyState label={t("noClasses")} />}
       <div className="grid gap-5 md:grid-cols-2">
         {account.classes.map((c) => {
           const net = c.paid - c.refunded;
@@ -71,8 +72,8 @@ export function StudentFinance({ locale, account, index }: { locale: Locale; acc
         })}
       </div>
 
-      <h3 className="eyebrow mt-8">{t("paymentHistory")}</h3>
-      {account.payments.length === 0 ? (
+      {!empty && <h3 className="eyebrow mt-8">{t("paymentHistory")}</h3>}
+      {empty ? null : account.payments.length === 0 ? (
         <div className="mt-3">
           <EmptyState label={t("noPayments")} />
         </div>

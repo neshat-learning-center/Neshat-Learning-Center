@@ -10,6 +10,7 @@ import { signOut } from "@/lib/actions/auth";
 import { Logo } from "@/components/ui/Logo";
 import { LangToggle } from "@/components/ui/LangToggle";
 import { Avatar } from "@/components/ui/Avatar";
+import { lt } from "@/lib/join/links-labels";
 
 /** The student/teacher account experience — a personal profile that happens to
  *  hold their classes and files, not an admin-style dashboard with a sidebar. */
@@ -39,6 +40,7 @@ export function ProfileShell({
         { label: d.materials, hash: "materials" },
         { label: d.announcements, hash: "announcements" },
         { label: dict.homework.scores, hash: "scores" },
+        { label: lt(locale)("salaryTitle"), hash: "salary" },
       ]
     : [
         { label: d.myClasses, hash: "classes" },
@@ -48,6 +50,7 @@ export function ProfileShell({
         { label: d.materials, hash: "materials" },
         { label: d.announcements, hash: "announcements" },
         { label: dict.homework.scores, hash: "scores" },
+        { label: lt(locale)("feesTitle"), hash: "fees" },
       ];
 
   const subtitle = isTeacher && profile?.specialty ? pick(profile.specialty, locale) : undefined;
